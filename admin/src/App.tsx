@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
-import { BarChart3, Building2, DoorOpen, LogOut, Menu, PanelLeftClose, ShieldCheck, X } from 'lucide-react';
+import { BarChart3, Building2, DoorOpen, LogOut, Menu, PanelLeftClose, ShieldCheck, X, Settings } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import DashboardPage from './pages/DashboardPage';
 import BrandsPage from './pages/BrandsPage';
 import ExhibitsPage from './pages/ExhibitsPage';
+import SettingsPage from './pages/SettingsPage';
 
 type AdminProfile = { full_name: string | null; email: string; role: string };
 
@@ -34,13 +35,13 @@ function Login({ onReady }: { onReady: (session: Session, profile: AdminProfile)
 
 function Shell({ profile }: { profile: AdminProfile }) {
   const [open,setOpen]=useState(false);
-  const links=[['/',BarChart3,'Overview'],['/brands',Building2,'Partners'],['/exhibits',DoorOpen,'Exhibits']] as const;
+  const links=[['/',BarChart3,'Overview'],['/brands',Building2,'Partners'],['/exhibits',DoorOpen,'Exhibits'],['/settings',Settings,'Settings']] as const;
   return <div className="app-shell"><button className="mobile-menu" onClick={()=>setOpen(true)} aria-label="Open navigation"><Menu/></button>
     {open && <button className="nav-scrim" onClick={()=>setOpen(false)} aria-label="Close navigation"/>}
     <aside className={`sidebar ${open?'open':''}`}><div className="sidebar-head"><div className="brand-mark small">A<span>30</span></div><button className="icon-button mobile-only" onClick={()=>setOpen(false)}><X/></button></div>
       <div className="workspace-label"><span className="live-dot"/> Museum operations</div><nav>{links.map(([to,Icon,label])=><NavLink key={to} to={to} end={to==='/'} onClick={()=>setOpen(false)}><Icon size={18}/>{label}</NavLink>)}</nav>
       <div className="sidebar-foot"><div className="account"><div className="avatar">{(profile.full_name||profile.email).slice(0,1).toUpperCase()}</div><div><strong>{profile.full_name||profile.email}</strong><span>{profile.role.replace('_',' ')}</span></div></div><button className="signout" onClick={()=>supabase.auth.signOut()}><LogOut size={17}/>Sign out</button></div>
-    </aside><main className="main-content"><Routes><Route path="/" element={<DashboardPage/>}/><Route path="/brands" element={<BrandsPage/>}/><Route path="/exhibits" element={<ExhibitsPage/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main></div>;
+    </aside><main className="main-content"><Routes><Route path="/" element={<DashboardPage/>}/><Route path="/brands" element={<BrandsPage/>}/><Route path="/exhibits" element={<ExhibitsPage/>}/><Route path="/settings" element={<SettingsPage/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main></div>;
 }
 
 export default function App(){
