@@ -38,6 +38,9 @@ export class PlayerController {
   public cameraAngleX: number = -0.28; // Pitch
   public cameraAngleY: number = 0;     // Yaw (0 = looking north)
   public cameraDistance: number = 5.2;
+  private responsiveCameraBase: number = 5.2;
+  private cameraZoomOffset: number = 0;
+  private cameraLookHeight: number = 1.4;
 
   private isDragging: boolean = false;
   private previousMousePosition = { x: 0, y: 0 };
@@ -194,8 +197,18 @@ export class PlayerController {
   };
 
   private onWheel = (e: WheelEvent) => {
-    this.cameraDistance = Math.max(2.5, Math.min(10.0, this.cameraDistance + e.deltaY * 0.004));
+    const nextDistance = Math.max(2.5, Math.min(10.0, this.cameraDistance + e.deltaY * 0.004));
+    this.cameraZoomOffset = nextDistance - this.responsiveCameraBase;
+    this.cameraDistance = nextDistance;
   };
+
+  /** Keep the avatar's world scale consistent while adapting its screen-space framing. */
+  public setViewportAspect(aspect: number) {
+    const portraitAmount = THREE.MathUtils.clamp((0.82 - aspect) / 0.36, 0, 1);
+    this.responsiveCameraBase = THREE.MathUtils.lerp(5.2, 6.2, portraitAmount);
+    this.cameraLookHeight = THREE.MathUtils.lerp(1.4, 1.24, portraitAmount);
+    this.cameraDistance = THREE.MathUtils.clamp(this.responsiveCameraBase + this.cameraZoomOffset, 2.5, 10);
+  }
 
   public setTouchJoystick(x: number, y: number) {
     this.touchVector = { x, y };
@@ -342,7 +355,7 @@ export class PlayerController {
     this.camera.position.lerp(cameraTargetPos, 0.15);
 
     // Look at player chest/head
-    const lookTarget = this.position.clone().add(new THREE.Vector3(0, 1.4, 0));
+    const lookTarget = this.position.clone().add(new THREE.Vector3(0, this.cameraLookHeight, 0));
     this.camera.lookAt(lookTarget);
   }
 }

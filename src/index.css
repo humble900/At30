@@ -30,14 +30,22 @@ canvas{display:block;touch-action:none}
    fixed positioning prevents parent layout, scrollbars, or 100vw rounding from boxing it in. */
 .game-viewport {
   position: fixed;
-  inset: 0;
-  width: 100%;
+  top: var(--game-top, 0px);
+  left: var(--game-left, 0px);
+  width: var(--game-width, 100%);
   height: 100vh;
   height: 100dvh;
+  height: var(--game-height, 100dvh);
   overflow: clip;
   background: #000;
   touch-action: none;
   overscroll-behavior: none;
+}
+.game-viewport:fullscreen {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .game-canvas-host {
   position: absolute;

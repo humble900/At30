@@ -116,6 +116,17 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   useEffect(() => {
     if (!mountRef.current) return;
 
+    const viewportElement = mountRef.current.parentElement;
+    const syncVisualViewport = () => {
+      if (!viewportElement) return;
+      const viewport = window.visualViewport;
+      viewportElement.style.setProperty('--game-width', `${Math.round(viewport?.width || window.innerWidth)}px`);
+      viewportElement.style.setProperty('--game-height', `${Math.round(viewport?.height || window.innerHeight)}px`);
+      viewportElement.style.setProperty('--game-left', `${Math.round(viewport?.offsetLeft || 0)}px`);
+      viewportElement.style.setProperty('--game-top', `${Math.round(viewport?.offsetTop || 0)}px`);
+    };
+    syncVisualViewport();
+
     const getViewportSize = () => {
       const rect = mountRef.current?.getBoundingClientRect();
       return {
@@ -183,6 +194,7 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
       renderer.domElement,
       museumScene.collisionBoxes
     );
+    controller.setViewportAspect(width / height);
     controllerRef.current = controller;
 
     let pointerStart = { x: 0, y: 0 };
@@ -302,14 +314,19 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
     // Resize Handler
     const handleResize = () => {
+      syncVisualViewport();
       const { width: w, height: h } = getViewportSize();
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      controller.setViewportAspect(w / h);
       renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
     window.visualViewport?.addEventListener('resize', handleResize);
+    window.visualViewport?.addEventListener('scroll', handleResize);
+    const viewportObserver = new ResizeObserver(handleResize);
+    viewportObserver.observe(mountRef.current);
 
     // Keydown for [E] inspect or exit
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -338,6 +355,8 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
       window.visualViewport?.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('scroll', handleResize);
+      viewportObserver.disconnect();
       window.removeEventListener('keydown', handleKeyDown);
       renderer.domElement.removeEventListener('pointerdown', handleAvatarPointerDown);
       renderer.domElement.removeEventListener('pointerup', handleAvatarPointerUp);
@@ -490,6 +509,14 @@ export const App: React.FC = () => {
   };
 
   const handleConfirmProfile = (name: string, color: string) => {
+    // This handler runs directly from the player's Continue button, satisfying the
+    // browser's user-activation requirement for an enterprise-style immersive game view.
+    if (!document.fullscreenElement && typeof document.documentElement.requestFullscreen === 'function') {
+      void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {
+        // iPhone and embedded browsers may not expose element fullscreen; the visual-
+        // viewport sizing path below remains fully edge-to-edge within the browser.
+      });
+    }
     setVisitorName(name);
     setAvatarColor(color);
     setIsNameModalOpen(false);

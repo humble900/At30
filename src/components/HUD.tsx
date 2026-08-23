@@ -56,11 +56,11 @@ export const HUD: React.FC<HUDProps> = ({
         <div className="museum-actions">
           <span className={`online-count ${multiplayerState}`} title={`Multiplayer: ${multiplayerState}`}><Users size={15} />{onlineCount}</span>
           <button className="passport-button" onClick={onOpenPassport}><Gift size={17} /><span>Passport</span><strong>{totalUnlocked}/3</strong></button>
-          <button onClick={() => setIsSpeechOpen((open) => !open)} aria-label="Speak to nearby visitors" title="Speak to nearby visitors"><MessageCircle size={17} /></button>
-          <button onClick={onToggleAudio} aria-label={isAudioMuted ? 'Unmute audio' : 'Mute audio'} title={isAudioMuted ? 'Unmute audio' : 'Mute audio'}>{isAudioMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}</button>
+          <button className="speech-button" onClick={() => setIsSpeechOpen((open) => !open)} aria-label="Speak to nearby visitors" title="Speak to nearby visitors"><MessageCircle size={17} /></button>
+          <button className="audio-button" onClick={onToggleAudio} aria-label={isAudioMuted ? 'Unmute audio' : 'Mute audio'} title={isAudioMuted ? 'Unmute audio' : 'Mute audio'}>{isAudioMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}</button>
           {supportsFullscreen && <button className="fullscreen-button" onClick={()=>void toggleFullscreen()} aria-label={isFullscreen?'Exit fullscreen':'Enter fullscreen'} title={isFullscreen?'Exit fullscreen':'Enter fullscreen'}>{isFullscreen?<Minimize size={17}/>:<Maximize size={17}/>}</button>}
-          <button onClick={onOpenHelp} aria-label="Open controls and help" title="Controls and help"><HelpCircle size={17} /></button>
-          <button onClick={onOpenExit} aria-label="Exit museum" title="Exit museum"><LogOut size={17} /></button>
+          <button className="help-button" onClick={onOpenHelp} aria-label="Open controls and help" title="Controls and help"><HelpCircle size={17} /></button>
+          <button className="exit-button" onClick={onOpenExit} aria-label="Exit museum" title="Exit museum"><LogOut size={17} /></button>
         </div>
       </header>
 
@@ -73,7 +73,14 @@ export const HUD: React.FC<HUDProps> = ({
         ) : nearbyArtwork ? (
           <div className="interaction-card artwork-card"><div><small>FROM THE COLLECTION</small><strong>{nearbyArtwork.title}</strong></div><button onClick={() => onInspectArtwork(nearbyArtwork)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
         ) : nearbyInfoPoint ? (
-          <div className={`interaction-card ${nearbyInfoPoint.kind==='partnership'?'partnership-card':'guide-card'}`}><div><small>{nearbyInfoPoint.kind==='partnership'?'PARTNERSHIPS':'VISITOR GUIDE'}</small><strong>{nearbyInfoPoint.title}</strong></div><button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
+          nearbyInfoPoint.kind === 'guide' ? (
+            <button className="proximity-action" onClick={() => onInspectInfoPoint(nearbyInfoPoint)} aria-label="Open visitor guide">
+              <span className="proximity-action__key"><kbd>E</kbd><Eye size={15}/></span>
+              <span className="proximity-action__label"><small>Visitor guide</small><strong>Open book</strong></span>
+            </button>
+          ) : (
+            <div className="interaction-card partnership-card"><div><small>PARTNERSHIPS</small><strong>{nearbyInfoPoint.title}</strong></div><button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
+          )
         ) : isNearExit ? (
           <div className="interaction-card exit-card"><div><small>SOUTH ENTRANCE</small><strong>Return to landing page</strong></div><button onClick={onOpenExit}><LogOut size={17} /> Exit</button></div>
         ) : null}

@@ -52,7 +52,9 @@ class TelemetryEngine {
   private getOrCreateSessionId(): string {
     let sid = sessionStorage.getItem('at30_telemetry_session_id');
     if (!sid) {
-      sid = crypto.randomUUID();
+      sid = typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
       sessionStorage.setItem('at30_telemetry_session_id', sid);
     }
     return sid;

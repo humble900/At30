@@ -15,7 +15,9 @@ export class MultiplayerManager {
   private sequence = 0;
   private lastTransformSentAt = 0;
   private lastSpeechSentAt = 0;
-  private readonly sessionId = crypto.randomUUID();
+  private readonly sessionId = typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
   private readonly callbacks: MultiplayerCallbacks;
 
   constructor(callbacks: MultiplayerCallbacks) { this.callbacks = callbacks; }

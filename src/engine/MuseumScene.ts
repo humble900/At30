@@ -429,17 +429,22 @@ export class MuseumScene {
     bookmark.rotation.x = -Math.PI / 2;
     guide.add(bookmark);
 
-    const haloMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending, depthWrite: false });
-    const halo = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.025, 12, 64), haloMaterial);
-    halo.position.y = -0.42;
+    // Counter-scale the locator glow so the quarter-size book remains discoverable.
+    const haloMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.48, blending: THREE.AdditiveBlending, depthWrite: false });
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(3.8, 0.09, 12, 64), haloMaterial);
+    halo.position.y = -0.5;
     halo.rotation.x = Math.PI / 2;
     guide.add(halo);
 
-    const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false });
-    const glow = new THREE.Mesh(new THREE.CircleGeometry(1.25, 48), glowMaterial);
-    glow.position.y = -0.4;
+    const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false });
+    const glow = new THREE.Mesh(new THREE.CircleGeometry(3.55, 48), glowMaterial);
+    glow.position.y = -0.48;
     glow.rotation.x = -Math.PI / 2;
     guide.add(glow);
+
+    const locatorLight = new THREE.PointLight(0xD9FF43, 1.35, 3.2, 2);
+    locatorLight.position.set(0, 0.8, 0);
+    guide.add(locatorLight);
 
     const marker = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.34), new THREE.MeshBasicMaterial({ map: TextureGenerator.createGalleryLabelTexture('VISITOR GUIDE', 'INSPECT TO BEGIN') }));
     marker.position.set(0, 0.24, 0.25);
@@ -453,8 +458,9 @@ export class MuseumScene {
       guide.rotation.y = Math.sin(time * 0.48) * 0.07;
       guide.rotation.z = Math.sin(time * 0.7) * 0.018;
       halo.rotation.z = time * 0.24;
-      haloMaterial.opacity = 0.2 + Math.sin(time * 1.65) * 0.07;
-      glowMaterial.opacity = 0.08 + Math.sin(time * 1.65) * 0.025;
+      haloMaterial.opacity = 0.4 + Math.sin(time * 1.65) * 0.12;
+      glowMaterial.opacity = 0.16 + Math.sin(time * 1.65) * 0.055;
+      locatorLight.intensity = 1.15 + Math.sin(time * 1.65) * 0.3;
     } });
   }
 
