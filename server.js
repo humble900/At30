@@ -2,13 +2,13 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 
-const PORT = process.env.PORT || 8080;
+const PORT = Number(process.env.PORT) || 8080;
 const DIST_DIR = path.join(process.cwd(), 'dist');
 
 const MIME_TYPES = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
   '.json': 'application/json',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
@@ -26,6 +26,12 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(url.pathname);
+
+  // Health check for cloud orchestrator / Railway
+  if (pathname === '/health' || pathname === '/healthz') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    return res.end('OK');
+  }
 
   // Admin SPA Routing
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
@@ -66,5 +72,5 @@ function serveFile(filePath, res) {
 }
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Production server running on port ${PORT}`);
+  console.log(`Production server running on 0.0.0.0:${PORT}`);
 });
