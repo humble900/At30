@@ -389,11 +389,12 @@ export class MuseumScene {
 
   private buildReceptionGuide() {
     const guide = new THREE.Group();
-    guide.position.set(0, 1.28, 6.1);
-    guide.scale.setScalar(0.68);
+    guide.position.set(0, 1.12, 6.1);
+    // A single, deliberately small reception guide: one quarter of its former scale.
+    guide.scale.setScalar(0.17);
 
-    const coverMaterial = new THREE.MeshStandardMaterial({ color: 0xD9FF43, emissive: 0x698000, emissiveIntensity: 0.38, roughness: 0.48, metalness: 0.12 });
-    const pageMaterial = new THREE.MeshStandardMaterial({ color: 0xF3F0E4, roughness: 0.9 });
+    const coverMaterial = new THREE.MeshStandardMaterial({ color: 0x3A2115, roughness: 0.92, metalness: 0.03 });
+    const pageMaterial = new THREE.MeshStandardMaterial({ color: 0xD8C9A4, roughness: 1 });
     const leftCover = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.08, 1.65), coverMaterial);
     const rightCover = leftCover.clone();
     leftCover.position.x = -0.61;
@@ -407,6 +408,18 @@ export class MuseumScene {
     leftPage.rotation.z = -0.1;
     rightPage.rotation.z = 0.1;
     guide.add(leftCover, rightCover, leftPage, rightPage);
+
+    // Raised leather spine and tarnished brass details make the visible back read as an old bound volume.
+    const leatherDark = new THREE.MeshStandardMaterial({ color: 0x1D100B, roughness: 1 });
+    const agedBrass = new THREE.MeshStandardMaterial({ color: 0x80652F, roughness: 0.7, metalness: 0.58 });
+    const spine = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.13, 1.68), leatherDark);
+    spine.position.set(0, -0.01, 0);
+    guide.add(spine);
+    for (const x of [-1.16, 1.16]) for (const z of [-0.74, 0.74]) {
+      const corner = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.095, 0.14), agedBrass);
+      corner.position.set(x, -0.015, z);
+      guide.add(corner);
+    }
 
     const bookmark = new THREE.Mesh(
       new THREE.PlaneGeometry(0.16, 1.15),
