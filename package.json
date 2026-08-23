@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "node build.js",
-    "start": "vite preview --host --port 8080",
-    "preview": "vite preview --host",
+    "start": "node server.js",
+    "preview": "node server.js",
     "lint": "oxlint"
   },
   "dependencies": {
