@@ -364,7 +364,7 @@ class TelemetryEngine {
   public flushSync() {
     if (this.eventQueue.length === 0 && this.spatialQueue.length === 0) return;
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
+    const supabaseKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY)?.trim();
     if (!supabaseUrl || !supabaseKey) return;
 
     // Use sendBeacon or synchronous fetch if available
