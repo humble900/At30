@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node build.js",
     "start": "vite preview --host --port 8080",
     "preview": "vite preview --host",
     "lint": "oxlint"
