@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUpCircle, Eye, Gift, HelpCircle, LogOut, MessageCircle, Send, Users, Volume2, VolumeX, Zap } from 'lucide-react';
+import { ArrowUpCircle, Eye, Gift, HelpCircle, LogOut, Maximize, MessageCircle, Minimize, Send, Users, Volume2, VolumeX, Zap } from 'lucide-react';
 import type { BrandKey, DiscoveredCoupon, ExhibitItem, PlayerPosition } from '../types';
 import { soundEngine } from '../utils/audio';
 import { MiniMap } from './MiniMap';
@@ -32,11 +32,17 @@ export const HUD: React.FC<HUDProps> = ({
   const [isSprinting, setIsSprinting] = useState(false);
   const [isSpeechOpen, setIsSpeechOpen] = useState(false);
   const [speechText, setSpeechText] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
+  const supportsFullscreen = typeof document.documentElement.requestFullscreen === 'function';
   useEffect(() => { if (speechTarget) setIsSpeechOpen(true); }, [speechTarget]);
+  useEffect(() => { const sync=()=>setIsFullscreen(Boolean(document.fullscreenElement)); document.addEventListener('fullscreenchange',sync); return()=>document.removeEventListener('fullscreenchange',sync); }, []);
   const toggleSprint = () => { const next = !isSprinting; setIsSprinting(next); onSprintToggle?.(next); soundEngine.playClick(); };
   const submitSpeech = (event: React.FormEvent) => {
     event.preventDefault();
     if (onSendSpeech(speechText)) { setSpeechText(''); setIsSpeechOpen(false); }
+  };
+  const toggleFullscreen = async () => {
+    try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen({ navigationUI: 'hide' }); } catch { /* Browser keeps the edge-to-edge viewport fallback. */ }
   };
 
   return (
@@ -52,6 +58,7 @@ export const HUD: React.FC<HUDProps> = ({
           <button className="passport-button" onClick={onOpenPassport}><Gift size={17} /><span>Passport</span><strong>{totalUnlocked}/3</strong></button>
           <button onClick={() => setIsSpeechOpen((open) => !open)} aria-label="Speak to nearby visitors" title="Speak to nearby visitors"><MessageCircle size={17} /></button>
           <button onClick={onToggleAudio} aria-label={isAudioMuted ? 'Unmute audio' : 'Mute audio'} title={isAudioMuted ? 'Unmute audio' : 'Mute audio'}>{isAudioMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}</button>
+          {supportsFullscreen && <button className="fullscreen-button" onClick={()=>void toggleFullscreen()} aria-label={isFullscreen?'Exit fullscreen':'Enter fullscreen'} title={isFullscreen?'Exit fullscreen':'Enter fullscreen'}>{isFullscreen?<Minimize size={17}/>:<Maximize size={17}/>}</button>}
           <button onClick={onOpenHelp} aria-label="Open controls and help" title="Controls and help"><HelpCircle size={17} /></button>
           <button onClick={onOpenExit} aria-label="Exit museum" title="Exit museum"><LogOut size={17} /></button>
         </div>

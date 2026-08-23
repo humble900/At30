@@ -116,8 +116,16 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   useEffect(() => {
     if (!mountRef.current) return;
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const getViewportSize = () => {
+      const rect = mountRef.current?.getBoundingClientRect();
+      return {
+        width: Math.max(1, Math.round(rect?.width || window.visualViewport?.width || window.innerWidth)),
+        height: Math.max(1, Math.round(rect?.height || window.visualViewport?.height || window.innerHeight))
+      };
+    };
+    const initialViewport = getViewportSize();
+    const width = initialViewport.width;
+    const height = initialViewport.height;
 
     // 1. Renderer
     const renderer = new THREE.WebGLRenderer({
@@ -242,9 +250,9 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         const nearExitPortal = controller.position.z >= 14.2 && Math.abs(controller.position.x) <= 3.0;
         setIsNearExit(nearExitPortal);
 
-        // Proximity detection to exhibits (within 4.2 meters)
+        // Close-range discovery keeps prompts out of the player's sightline until intentional approach.
         let closest: ExhibitItem | null = null;
-        let minDistance = 4.2;
+        let minDistance = 2.35;
 
         for (const ex of EXHIBITS) {
           const dx = controller.position.x - ex.position[0];
@@ -258,7 +266,7 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         setNearbyExhibit(closest);
 
         let closestArtwork: MasterpieceArt | null = null;
-        let artworkDistance = 3.2;
+        let artworkDistance = 1.8;
         for (const artwork of museumScene.artworks) {
           const dx = controller.position.x - artwork.position[0];
           const dz = controller.position.z - artwork.position[1];
@@ -271,12 +279,15 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         setNearbyArtwork(closestArtwork);
 
         let closestInfoPoint: MuseumInfoPoint | null = null;
-        let infoDistance = 3.5;
+        let infoDistance = 2.0;
         for (const point of museumScene.infoPoints) {
           const dx = controller.position.x - point.position[0];
           const dz = controller.position.z - point.position[1];
           const distance = Math.sqrt(dx * dx + dz * dz);
-          if (distance < infoDistance) {
+          // The small guide book should be discovered visually before its prompt appears.
+          // Other information points keep the more forgiving general interaction radius.
+          const interactionRadius = point.kind === 'guide' ? 0.85 : 2.0;
+          if (distance < interactionRadius && distance < infoDistance) {
             infoDistance = distance;
             closestInfoPoint = point;
           }
@@ -291,13 +302,14 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
     // Resize Handler
     const handleResize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { width: w, height: h } = getViewportSize();
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    window.visualViewport?.addEventListener('resize', handleResize);
 
     // Keydown for [E] inspect or exit
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -324,6 +336,8 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
       renderer.domElement.removeEventListener('pointerdown', handleAvatarPointerDown);
       renderer.domElement.removeEventListener('pointerup', handleAvatarPointerUp);
@@ -365,10 +379,10 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black font-sans select-none">
+    <div className="game-viewport bg-black font-sans select-none">
       
       {/* 3D WebGL Canvas Viewport */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      <div ref={mountRef} className="game-canvas-host cursor-grab active:cursor-grabbing" />
 
       {/* Modern Glassmorphic HUD */}
       <HUD

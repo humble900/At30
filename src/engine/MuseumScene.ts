@@ -389,7 +389,7 @@ export class MuseumScene {
 
   private buildReceptionGuide() {
     const guide = new THREE.Group();
-    guide.position.set(0, 1.12, 6.1);
+    guide.position.set(0, 1.12, 4.35);
     // A single, deliberately small reception guide: one quarter of its former scale.
     guide.scale.setScalar(0.17);
 
@@ -446,7 +446,7 @@ export class MuseumScene {
     marker.rotation.x = -Math.PI / 2;
     guide.add(marker);
     this.scene.add(guide);
-    this.infoPoints.push({ id: 'visitor-guide', kind: 'guide', title: 'How to explore the museum', position: [0, 6.1] });
+    this.infoPoints.push({ id: 'visitor-guide', kind: 'guide', title: 'How to explore the museum', position: [0, 4.35] });
     const baseY = guide.position.y;
     this.animatedObjects.push({ mesh: guide, update: (time) => {
       guide.position.y = baseY + Math.sin(time * 1.65) * 0.08;
