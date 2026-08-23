@@ -72,10 +72,8 @@
 .experience-card p { font-size:13px; line-height:1.65; color:#62675f; max-width:330px; }
 .experience-card button { margin-top:auto; align-self:flex-end; width:40px; height:40px; display:grid; place-items:center; border:1px solid #aaa; background:transparent; cursor:pointer; }.experience-card button:hover { background:var(--ink); color:#fff; }
 
-.enterprise-section { background:#cfd6ff; display:grid; grid-template-columns:1fr 1fr; gap:9vw; padding:110px clamp(24px,6.6vw,102px); }
-.enterprise-copy { padding-top:30px; }.enterprise-copy > p { font-size:18px; line-height:1.65; max-width:580px; color:#3e433e; }
-.enterprise-points { display:flex; flex-direction:column; gap:12px; margin:34px 0; font:11px 'DM Mono',monospace; }.enterprise-points span { padding-bottom:12px; border-bottom:1px solid rgba(16,19,16,.18); }
-.light-cta { background:#fff; border:0; padding:16px 19px; display:inline-flex; align-items:center; gap:28px; font-weight:800; cursor:pointer; }
+.enterprise-section{background:#111510;color:#f3f4ef;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(60px,9vw,150px);padding:120px clamp(24px,6.6vw,102px);border-top:1px solid #2b302a}.enterprise-section .kicker{color:#9da59b}.enterprise-intro{display:flex;flex-direction:column;align-items:flex-start}.enterprise-intro h2{max-width:680px;margin-bottom:28px}.enterprise-intro>p{max-width:590px;color:#aeb5ab;font-size:16px;line-height:1.75}.partner-status{width:100%;max-width:590px;margin-top:auto;padding-top:52px;display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #3a4038;padding-bottom:15px;font:500 10px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.09em}.partner-status span{color:#81897f}.partner-status strong{color:var(--acid)}
+.enterprise-copy{display:grid;gap:28px}.partner-offerings{border-top:1px solid #3a4038}.partner-offerings article{display:grid;grid-template-columns:44px 1fr;gap:18px;padding:24px 0;border-bottom:1px solid #3a4038}.partner-offerings article>span{padding-top:4px;color:#7f887d;font:500 10px 'DM Mono',monospace}.partner-offerings h3{font-size:18px;letter-spacing:-.025em;margin-bottom:7px}.partner-offerings p{max-width:520px;color:#9fa79d;font-size:13px;line-height:1.65}.partner-delivery{display:flex;align-items:flex-start;gap:14px;padding:17px;border:1px solid #373d35;background:#171b17}.partner-delivery svg{flex:none;color:var(--acid)}.partner-delivery p{display:grid;gap:4px;font-size:12px}.partner-delivery span{color:#929a90;line-height:1.5}.light-cta{justify-self:start;background:var(--acid);color:var(--ink);border:0;padding:16px 19px;display:inline-flex;align-items:center;gap:28px;font-weight:800;cursor:pointer}.light-cta:hover{background:#e3ff79}
 .landing-footer { min-height:110px; padding:30px clamp(24px,6.6vw,102px); background:#111510; color:#fff; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; }
 .landing-footer p { text-align:center; color:#9ca299; font-size:12px; }.landing-footer > span { text-align:right; color:#747b72; font:10px 'DM Mono',monospace; }
 
@@ -83,14 +81,14 @@
   .nav-links { display:none; }
   .landing-hero { grid-template-columns:1fr; padding-top:70px; }
   .hero-visual { min-height:560px; margin-top:20px; }.visual-halo { width:500px; max-width:90vw; }.museum-card { width:340px; }
-  .section-heading,.enterprise-section { grid-template-columns:1fr; gap:35px; }.experience-grid { grid-template-columns:1fr; }.experience-card { min-height:300px; }.experience-card-top { margin-bottom:45px; }
+  .section-heading,.enterprise-section { grid-template-columns:1fr; gap:52px; }.experience-grid { grid-template-columns:1fr; }.experience-card { min-height:300px; }.experience-card-top { margin-bottom:45px; }.partner-status{margin-top:38px;padding-top:0}
   .trust-strip { align-items:flex-start; flex-direction:column; gap:20px; }.trust-strip div { width:100%; flex-wrap:wrap; }
 }
 @media (max-width: 560px) {
   .landing-nav { height:66px; }.nav-cta { padding:10px 12px; }.nav-cta svg { display:none; }
   .landing-hero { padding-left:20px; padding-right:20px; min-height:0; }.hero-copy h1 { font-size:58px; }.hero-copy > p { font-size:15px; }.hero-actions { align-items:flex-start; flex-direction:column; gap:20px; }
   .hero-visual { min-height:470px; }.museum-card { min-width:0; width:280px; }.museum-card img { height:270px; }
-  .experience-section,.enterprise-section { padding:80px 20px; }.section-heading h2,.enterprise-section h2 { font-size:42px; }.landing-footer { grid-template-columns:1fr; gap:18px; text-align:center; }.landing-footer .brand-mark { justify-content:center; }.landing-footer > span { text-align:center; }.trust-strip div { gap:18px; }
+  .experience-section,.enterprise-section { padding:80px 20px; }.section-heading h2,.enterprise-section h2 { font-size:42px; }.landing-footer { grid-template-columns:1fr; gap:18px; text-align:center; }.landing-footer .brand-mark { justify-content:center; }.landing-footer > span { text-align:center; }.trust-strip div { gap:18px; }.partner-status{align-items:flex-start;flex-direction:column;gap:8px}.partner-offerings article{grid-template-columns:34px 1fr}.light-cta{width:100%;justify-content:space-between;min-height:52px}
 }
 
 @media (prefers-reduced-motion: reduce) { .landing-shell * { scroll-behavior:auto !important; transition:none !important; } }

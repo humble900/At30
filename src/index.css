@@ -18,6 +18,23 @@ html, body, #root {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   user-select: none;
   -webkit-user-select: none;
+  overscroll-behavior: none;
+}
+
+button,input,a{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+canvas{display:block;touch-action:none}
+
+@media (max-width:600px){
+  .fixed.inset-0:not(.museum-modal-backdrop):not(.registration-backdrop){align-items:flex-end;padding:0;padding-top:env(safe-area-inset-top)}
+  .fixed.inset-0:not(.museum-modal-backdrop):not(.registration-backdrop)>div{max-height:92dvh;border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom)}
+  .fixed.inset-0 .p-6{padding:1.125rem}
+  .fixed.inset-0 .max-h-\[60vh\],.fixed.inset-0 .max-h-\[75vh\]{max-height:60dvh}
+}
+
+@media (max-height:520px) and (orientation:landscape){
+  .fixed.inset-0:not(.museum-modal-backdrop):not(.registration-backdrop){align-items:center;padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))}
+  .fixed.inset-0:not(.museum-modal-backdrop):not(.registration-backdrop)>div{max-height:calc(100dvh - 16px);border-radius:14px}
 }
 
 /* Custom Scrollbar */

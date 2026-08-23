@@ -10,6 +10,8 @@ export class Avatar {
   private rightLeg!: THREE.Group;
   private shadowDecal!: THREE.Mesh;
   private nameSprite!: THREE.Sprite;
+  private speechSprite: THREE.Sprite | null = null;
+  private speechExpiresAt: number = 0;
 
   private walkCycle: number = 0;
   private primaryColor: string = '#00F0FF';
@@ -185,6 +187,64 @@ export class Avatar {
 
   public setColor(color: string) {
     this.primaryColor = color;
+  }
+
+  public showSpeech(rawText: string, durationMs: number = 6000) {
+    const text = rawText.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 100);
+    if (!text) return;
+    if (this.speechSprite) {
+      this.group.remove(this.speechSprite);
+      this.disposeSprite(this.speechSprite);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 128;
+    const context = canvas.getContext('2d')!;
+    context.fillStyle = 'rgba(255,255,255,.96)';
+    context.strokeStyle = '#101310';
+    context.lineWidth = 5;
+    context.roundRect(8, 8, 496, 96, 18);
+    context.fill();
+    context.stroke();
+    context.fillStyle = '#101310';
+    context.font = '600 25px Inter, sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    const displayText = text.length > 48 ? `${text.slice(0, 47)}…` : text;
+    context.fillText(displayText, 256, 56, 460);
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+    this.speechSprite = new THREE.Sprite(material);
+    this.speechSprite.scale.set(2.8, 0.7, 1);
+    this.speechSprite.position.set(0, 2.38, 0);
+    this.speechSprite.renderOrder = 50;
+    this.group.add(this.speechSprite);
+    this.speechExpiresAt = Date.now() + durationMs;
+  }
+
+  public updateSpeech() {
+    if (this.speechSprite && Date.now() >= this.speechExpiresAt) {
+      this.group.remove(this.speechSprite);
+      this.disposeSprite(this.speechSprite);
+      this.speechSprite = null;
+    }
+  }
+
+  private disposeSprite(sprite: THREE.Sprite) {
+    sprite.material.map?.dispose();
+    sprite.material.dispose();
+  }
+
+  public dispose() {
+    this.group.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry.dispose();
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach((material) => material.dispose());
+      } else if (object instanceof THREE.Sprite) {
+        this.disposeSprite(object);
+      }
+    });
   }
 
   public animate(isMoving: boolean, speedMultiplier: number = 1, delta: number = 0.016): boolean {

@@ -55,7 +55,7 @@ export class PlayerController {
     this.domElement = domElement;
     this.collisionBoxes = collisionBoxes;
 
-    this.position = new THREE.Vector3(0, 0, 13.5); // Spawn inside south entrance corridor facing north
+    this.position = new THREE.Vector3(0, 0, 8.5); // Spawn at south entrance of Grand Central Atrium facing north
     this.avatar.group.position.copy(this.position);
     this.avatar.group.rotation.y = this.rotationY;
     this.setupListeners();

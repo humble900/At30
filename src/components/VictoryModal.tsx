@@ -47,7 +47,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({ onClose, coupons }) 
             <span>Master Scavenger Complete</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Congratulations, Innovation Champion!
+            Collection complete
           </h2>
           <p className="text-sm text-gray-300 mt-2 max-w-md mx-auto">
             You successfully navigated the <strong>At30 Pavilion</strong> and discovered all 3 exclusive brand vouchers!

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { MuseumScene } from './engine/MuseumScene';
+import { telemetry } from './services/TelemetryService';
+import { MuseumScene, type MuseumInfoPoint } from './engine/MuseumScene';
 import { Avatar } from './engine/Avatar';
 import { PlayerController } from './engine/PlayerController';
 import { EXHIBITS } from './data/exhibits';
@@ -12,8 +13,14 @@ import { ControlsOverlay } from './components/ControlsOverlay';
 import { VictoryModal } from './components/VictoryModal';
 import { ExitModal } from './components/ExitModal';
 import { NameSelectModal } from './components/NameSelectModal';
+import { ArtworkModal } from './components/ArtworkModal';
+import { MuseumInfoModal } from './components/MuseumInfoModal';
+import type { MasterpieceArt } from './data/artworks';
 import { LandingPage } from './components/LandingPage';
 import { soundEngine } from './utils/audio';
+import { MultiplayerManager } from './multiplayer/MultiplayerManager';
+import { RemotePlayerRegistry } from './multiplayer/RemotePlayerRegistry';
+import type { MultiplayerConnectionState } from './multiplayer/types';
 
 interface MuseumExperienceProps {
   visitorName: string;
@@ -29,6 +36,9 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<PlayerController | null>(null);
   const sceneInstanceRef = useRef<MuseumScene | null>(null);
+  const localAvatarRef = useRef<Avatar | null>(null);
+  const multiplayerRef = useRef<MultiplayerManager | null>(null);
+  const remotePlayersRef = useRef<RemotePlayerRegistry | null>(null);
 
   // Game & Quest State
   const [discoveredCodes, setDiscoveredCodes] = useState<Record<BrandKey, DiscoveredCoupon | null>>(() => {
@@ -49,27 +59,40 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   const nearbyExhibitRef = useRef<ExhibitItem | null>(null);
   nearbyExhibitRef.current = nearbyExhibit;
 
+  const [nearbyArtwork, setNearbyArtwork] = useState<MasterpieceArt | null>(null);
+  const nearbyArtworkRef = useRef<MasterpieceArt | null>(null);
+  nearbyArtworkRef.current = nearbyArtwork;
+
+  const [nearbyInfoPoint, setNearbyInfoPoint] = useState<MuseumInfoPoint | null>(null);
+  const nearbyInfoPointRef = useRef<MuseumInfoPoint | null>(null);
+  nearbyInfoPointRef.current = nearbyInfoPoint;
+
   const [isNearExit, setIsNearExit] = useState<boolean>(false);
   const isNearExitRef = useRef<boolean>(false);
   isNearExitRef.current = isNearExit;
 
   const [selectedExhibit, setSelectedExhibit] = useState<ExhibitItem | null>(null);
+  const [selectedArtwork, setSelectedArtwork] = useState<MasterpieceArt | null>(null);
+  const [selectedInfoPoint, setSelectedInfoPoint] = useState<MuseumInfoPoint | null>(null);
   const [isPassportOpen, setIsPassportOpen] = useState<boolean>(false);
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
   const [isExitOpen, setIsExitOpen] = useState<boolean>(false);
   const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
   const [hasTriggeredVictory, setHasTriggeredVictory] = useState<boolean>(() => localStorage.getItem('at30_victory_seen') === 'true');
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
+  const [multiplayerState, setMultiplayerState] = useState<MultiplayerConnectionState>('offline');
+  const [onlineCount, setOnlineCount] = useState(1);
+  const [speechTarget, setSpeechTarget] = useState<{ sessionId: string; displayName: string } | null>(null);
   const isOverlayOpenRef = useRef(false);
 
   useEffect(() => {
-    isOverlayOpenRef.current = Boolean(selectedExhibit || isPassportOpen || isHelpOpen || isExitOpen || isVictoryOpen);
-  }, [selectedExhibit, isPassportOpen, isHelpOpen, isExitOpen, isVictoryOpen]);
+    isOverlayOpenRef.current = Boolean(selectedExhibit || selectedArtwork || selectedInfoPoint || isPassportOpen || isHelpOpen || isExitOpen || isVictoryOpen);
+  }, [selectedExhibit, selectedArtwork, selectedInfoPoint, isPassportOpen, isHelpOpen, isExitOpen, isVictoryOpen]);
   
   const [playerPos, setPlayerPos] = useState<PlayerPosition>({
     x: 0,
     y: 0,
-    z: 13.5,
+    z: 8.5,
     rotationY: Math.PI
   });
 
@@ -114,7 +137,7 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 150);
-    camera.position.set(0, 3, 20);
+    camera.position.set(0, 2.8, 13.5);
 
     // 3. Scene & World
     const museumScene = new MuseumScene();
@@ -122,7 +145,28 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
     // 4. Avatar (with customized name and suit color)
     const avatar = new Avatar(avatarColor, visitorName);
+    localAvatarRef.current = avatar;
     museumScene.scene.add(avatar.group);
+
+    const remotePlayers = new RemotePlayerRegistry(museumScene.scene);
+    remotePlayersRef.current = remotePlayers;
+    const multiplayer = new MultiplayerManager({
+      onStateChange: setMultiplayerState,
+      onPresenceSync: (players) => {
+        remotePlayers.sync(players);
+        setOnlineCount(players.length + 1);
+        setSpeechTarget(current => current && players.some(player => player.sessionId === current.sessionId) ? current : null);
+      },
+      onTransform: (message) => remotePlayers.applyTransform(message),
+      onSpeech: (message) => {
+        const localPosition = controllerRef.current?.position;
+        if (message.targetSessionId || (localPosition && localPosition.distanceTo(new THREE.Vector3(message.position.x, message.position.y, message.position.z)) <= 9)) {
+          remotePlayers.showSpeech(message);
+        }
+      },
+    });
+    multiplayerRef.current = multiplayer;
+    void multiplayer.connect(visitorName, avatarColor);
 
     // 5. Controller
     const controller = new PlayerController(
@@ -133,9 +177,23 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
     );
     controllerRef.current = controller;
 
+    let pointerStart = { x: 0, y: 0 };
+    const handleAvatarPointerDown = (event: PointerEvent) => { pointerStart = { x: event.clientX, y: event.clientY }; };
+    const handleAvatarPointerUp = (event: PointerEvent) => {
+      if (Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 8) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      const target = remotePlayers.pickPlayer(camera, ((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1, controller.position);
+      if (target) { soundEngine.playClick(); setSpeechTarget(target); }
+    };
+    renderer.domElement.addEventListener('pointerdown', handleAvatarPointerDown);
+    renderer.domElement.addEventListener('pointerup', handleAvatarPointerUp);
+
     // Proximity checking throttle timer
     let lastProximityCheck = 0;
     const clock = new THREE.Clock();
+    const previousNetworkPosition = controller.position.clone();
+    let previousNetworkRotation = controller.rotationY;
+    let lastNetworkHeartbeat = 0;
 
     // 6. Animation Loop
     let animationFrameId: number;
@@ -144,9 +202,28 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsedTime = clock.getElapsedTime();
+      telemetry.recordFps(delta > 0 ? 1 / delta : 60);
+      telemetry.trackSpatialSample(controller.position.x, controller.position.z);
 
       // Update Controller & Camera
       controller.update(delta);
+      remotePlayers.update(delta);
+      avatar.updateSpeech();
+
+      const movedDistance = controller.position.distanceTo(previousNetworkPosition);
+      const rotationChanged = Math.abs(controller.rotationY - previousNetworkRotation) > 0.025;
+      const now = performance.now();
+      if (movedDistance > 0.015 || rotationChanged || now - lastNetworkHeartbeat > 1000) {
+        const speed = delta > 0 ? movedDistance / delta : 0;
+        multiplayer.sendTransform({
+          position: { x: controller.position.x, y: controller.position.y, z: controller.position.z },
+          rotationY: controller.rotationY,
+          animation: controller.position.y > 0.08 ? 'jump' : movedDistance > 0.015 ? (speed > 7 ? 'run' : 'walk') : 'idle',
+        });
+        previousNetworkPosition.copy(controller.position);
+        previousNetworkRotation = controller.rotationY;
+        lastNetworkHeartbeat = now;
+      }
 
       // Update Scene Animations
       museumScene.update(elapsedTime);
@@ -179,6 +256,32 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
           }
         }
         setNearbyExhibit(closest);
+
+        let closestArtwork: MasterpieceArt | null = null;
+        let artworkDistance = 3.2;
+        for (const artwork of museumScene.artworks) {
+          const dx = controller.position.x - artwork.position[0];
+          const dz = controller.position.z - artwork.position[1];
+          const distance = Math.sqrt(dx * dx + dz * dz);
+          if (distance < artworkDistance) {
+            artworkDistance = distance;
+            closestArtwork = artwork.item;
+          }
+        }
+        setNearbyArtwork(closestArtwork);
+
+        let closestInfoPoint: MuseumInfoPoint | null = null;
+        let infoDistance = 3.5;
+        for (const point of museumScene.infoPoints) {
+          const dx = controller.position.x - point.position[0];
+          const dz = controller.position.z - point.position[1];
+          const distance = Math.sqrt(dx * dx + dz * dz);
+          if (distance < infoDistance) {
+            infoDistance = distance;
+            closestInfoPoint = point;
+          }
+        }
+        setNearbyInfoPoint(closestInfoPoint);
       }
 
       renderer.render(museumScene.scene, camera);
@@ -206,6 +309,12 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         } else if (nearbyExhibitRef.current) {
           soundEngine.playInspect();
           setSelectedExhibit(nearbyExhibitRef.current);
+        } else if (nearbyArtworkRef.current) {
+          soundEngine.playInspect();
+          setSelectedArtwork(nearbyArtworkRef.current);
+        } else if (nearbyInfoPointRef.current) {
+          soundEngine.playInspect();
+          setSelectedInfoPoint(nearbyInfoPointRef.current);
         }
       }
     };
@@ -216,7 +325,15 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
+      renderer.domElement.removeEventListener('pointerdown', handleAvatarPointerDown);
+      renderer.domElement.removeEventListener('pointerup', handleAvatarPointerUp);
       controller.dispose();
+      void multiplayer.disconnect();
+      remotePlayers.dispose();
+      avatar.dispose();
+      multiplayerRef.current = null;
+      remotePlayersRef.current = null;
+      localAvatarRef.current = null;
       renderer.dispose();
       if (mountRef.current && renderer.domElement) {
         mountRef.current.innerHTML = '';
@@ -239,6 +356,14 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
     }));
   };
 
+  const handleSendSpeech = (text: string) => {
+    const position = controllerRef.current?.position;
+    if (!position) return false;
+    const sent = multiplayerRef.current?.sendSpeech(text, { x: position.x, y: position.y, z: position.z }, speechTarget?.sessionId) ?? false;
+    if (sent) localAvatarRef.current?.showSpeech(text, 6000);
+    return sent;
+  };
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black font-sans select-none">
       
@@ -251,6 +376,8 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         avatarColor={avatarColor}
         discoveredCodes={discoveredCodes}
         nearbyExhibit={nearbyExhibit}
+        nearbyArtwork={nearbyArtwork}
+        nearbyInfoPoint={nearbyInfoPoint}
         isNearExit={isNearExit}
         playerPos={playerPos}
         isAudioMuted={isAudioMuted}
@@ -259,6 +386,8 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenExit={() => setIsExitOpen(true)}
         onInspectExhibit={(ex) => setSelectedExhibit(ex)}
+        onInspectArtwork={setSelectedArtwork}
+        onInspectInfoPoint={setSelectedInfoPoint}
         onJoystickMove={(x, y) => {
           controllerRef.current?.setTouchJoystick(x, y);
         }}
@@ -271,6 +400,11 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         onSprintToggle={(run) => {
           controllerRef.current?.setSprint(run);
         }}
+        multiplayerState={multiplayerState}
+        onlineCount={onlineCount}
+        onSendSpeech={handleSendSpeech}
+        speechTarget={speechTarget}
+        onClearSpeechTarget={() => setSpeechTarget(null)}
       />
 
       {/* Exhibit Inspection & Clue Modal */}
@@ -282,6 +416,9 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
           onClaimCoupon={handleClaimCoupon}
         />
       )}
+
+      {selectedArtwork && <ArtworkModal artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />}
+      {selectedInfoPoint && <MuseumInfoModal point={selectedInfoPoint} onClose={() => setSelectedInfoPoint(null)} />}
 
       {/* Passport / Rewards Bag Modal */}
       {isPassportOpen && (
@@ -321,7 +458,6 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 export const App: React.FC = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
-  const [hasSavedProfile, setHasSavedProfile] = useState(() => Boolean(localStorage.getItem('at30_visitor_name')));
   
   const [visitorName, setVisitorName] = useState<string>(() => {
     return localStorage.getItem('at30_visitor_name') || 'Curator Vance';
@@ -336,23 +472,27 @@ export const App: React.FC = () => {
   };
 
   const handleEnterMuseum = () => {
-    if (hasSavedProfile) {
-      setHasEntered(true);
-    } else {
-      setIsNameModalOpen(true);
-    }
+    setIsNameModalOpen(true);
   };
 
   const handleConfirmProfile = (name: string, color: string) => {
     setVisitorName(name);
     setAvatarColor(color);
-    setHasSavedProfile(true);
     setIsNameModalOpen(false);
     setHasEntered(true);
+    telemetry.trackSessionStart(name);
   };
 
   const handleExitToReception = () => {
     setHasEntered(false);
+    let count = 0;
+    try {
+      const saved = localStorage.getItem('at30_discovered_coupons');
+      if (saved) {
+        count = Object.values(JSON.parse(saved)).filter(Boolean).length;
+      }
+    } catch {}
+    telemetry.trackSessionEnd(count);
   };
 
   return (

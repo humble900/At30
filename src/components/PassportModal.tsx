@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { BrandKey, DiscoveredCoupon } from '../types';
 import { soundEngine } from '../utils/audio';
 import { X, Gift, Copy, Check, ExternalLink, Sparkles, Lock, Trophy, ShieldCheck, Tag } from 'lucide-react';
+import { telemetry } from '../services/TelemetryService';
 
 interface PassportModalProps {
   visitorName?: string;
@@ -61,11 +62,16 @@ export const PassportModal: React.FC<PassportModalProps> = ({
   const totalCollected = Object.values(discoveredCodes).filter(Boolean).length;
   const isComplete = totalCollected === 3;
 
-  const handleCopy = (code: string) => {
+  const handleCopy = (brandKey: BrandKey, code: string) => {
     soundEngine.playClick();
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
+    telemetry.trackCouponCopied(brandKey, code);
     setTimeout(() => setCopiedCode(null), 2500);
+  };
+
+  const handleRedeemClick = (brandKey: BrandKey, url: string) => {
+    telemetry.trackBrandOutboundClicked(brandKey, url);
   };
 
   return (
@@ -81,10 +87,10 @@ export const PassportModal: React.FC<PassportModalProps> = ({
             <div>
               <div className="flex items-center gap-1.5 text-[11px] font-mono text-cyan-300 font-bold uppercase tracking-wider">
                 <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Issued to VIP Curator: {visitorName}</span>
+                <span>Visitor: {visitorName}</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                At30 Innovation Passport
+                Museum passport
                 {isComplete && <Trophy className="w-6 h-6 text-amber-400 animate-bounce" />}
               </h2>
             </div>
@@ -104,7 +110,7 @@ export const PassportModal: React.FC<PassportModalProps> = ({
         {/* Quest Progress Meter */}
         <div className="px-6 py-3.5 bg-black/50 border-b border-white/5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs font-semibold text-gray-300">
-            <span>VIP Rewards Collection</span>
+            <span>Collection progress</span>
             <span className="text-gray-500">•</span>
             <span className="text-cyan-400">{totalCollected} of 3 Perks Unlocked</span>
           </div>
@@ -186,7 +192,7 @@ export const PassportModal: React.FC<PassportModalProps> = ({
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-black/70 border border-cyan-500/30">
                     <div className="w-full sm:w-auto text-center sm:text-left">
                       <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                        Your Exclusive Passkey:
+                        Reward code
                       </div>
                       <div className="font-mono text-base font-black text-cyan-300 tracking-wider">
                         {activeCode}
@@ -195,7 +201,7 @@ export const PassportModal: React.FC<PassportModalProps> = ({
 
                     <div className="flex items-center space-x-2 w-full sm:w-auto">
                       <button
-                        onClick={() => handleCopy(activeCode)}
+                        onClick={() => handleCopy(brand.key, activeCode)}
                         className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs flex items-center justify-center space-x-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
                       >
                         {copiedCode === activeCode ? <Check className="w-4 h-4 text-black" /> : <Copy className="w-4 h-4" />}
@@ -206,6 +212,7 @@ export const PassportModal: React.FC<PassportModalProps> = ({
                         href={redeemUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => handleRedeemClick(brand.key, redeemUrl)}
                         className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors border border-white/15 cursor-pointer"
                       >
                         <span>Redeem</span>

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { EXHIBITS } from '../data/exhibits';
+import { ONLINE_MASTERPIECES, type MasterpieceArt } from '../data/artworks';
 import type { ExhibitItem } from '../types';
 import { TextureGenerator } from './TextureGenerator';
 
@@ -9,6 +10,18 @@ export interface BoundingBox2D {
   minZ: number;
   maxZ: number;
   topY?: number;
+}
+
+export interface ArtworkPlacement {
+  item: MasterpieceArt;
+  position: [number, number];
+}
+
+export interface MuseumInfoPoint {
+  id: 'visitor-guide' | 'advertise';
+  kind: 'guide' | 'partnership';
+  title: string;
+  position: [number, number];
 }
 
 // ─── WING ROOM LAYOUT CONSTANTS ─────────────────────────────
@@ -35,6 +48,8 @@ const HALL_LEN = 8; // Hallway length between rooms
 export class MuseumScene {
   public scene: THREE.Scene;
   public exhibits: { item: ExhibitItem; meshGroup: THREE.Group; ringMesh: THREE.Mesh }[] = [];
+  public artworks: ArtworkPlacement[] = [];
+  public infoPoints: MuseumInfoPoint[] = [];
   public collisionBoxes: BoundingBox2D[] = [];
   public animatedObjects: { mesh: THREE.Object3D; update: (time: number) => void }[] = [];
 
@@ -64,6 +79,7 @@ export class MuseumScene {
     this.buildNorthWing(); // ClayRent
     this.buildWestWing();  // LeadMagic
     this.buildSouthEntrance();
+    this.buildReceptionGuide();
     this.buildExhibits();
   }
 
@@ -246,6 +262,10 @@ export class MuseumScene {
     this.scene.add(spotLight);
 
     this.scene.add(group);
+    const artworkIndex = paintingTex.userData.artworkIndex;
+    if (typeof artworkIndex === 'number' && ONLINE_MASTERPIECES[artworkIndex]) {
+      this.artworks.push({ item: ONLINE_MASTERPIECES[artworkIndex], position: [x, z] });
+    }
   }
 
   /** Add arch/banner signage over a doorway */
@@ -343,9 +363,86 @@ export class MuseumScene {
     welcomeSign.rotation.y = Math.PI;
     this.scene.add(welcomeSign);
 
+    // Reception media screen for future museum partners.
+    const adFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 3.1, 4.9),
+      new THREE.MeshStandardMaterial({ color: 0x171A17, metalness: 0.7, roughness: 0.28 })
+    );
+    adFrame.position.set(-doorW / 2 + 0.28, 2.45, ATRIUM_HALF + entranceLen / 2);
+    adFrame.castShadow = true;
+    this.scene.add(adFrame);
+
+    const adScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(4.55, 2.72),
+      new THREE.MeshBasicMaterial({ map: TextureGenerator.createAdvertisingScreenTexture() })
+    );
+    adScreen.position.set(-doorW / 2 + 0.39, 2.45, ATRIUM_HALF + entranceLen / 2);
+    adScreen.rotation.y = Math.PI / 2;
+    this.scene.add(adScreen);
+    this.infoPoints.push({ id: 'advertise', kind: 'partnership', title: 'Advertise in the AT30 Museum', position: [-doorW / 2 + 0.4, ATRIUM_HALF + entranceLen / 2] });
+
     this.addCeiling(doorW, entranceLen, 0, ATRIUM_HALF + entranceLen / 2, CORRIDOR_CEIL);
     this.addRunner(2.5, entranceLen, 0, ATRIUM_HALF + entranceLen / 2);
     this.addColumnPair(0, ATRIUM_HALF, doorW);
+    this.addRoomLight(0, ATRIUM_HALF + entranceLen / 2, 0xFFF5E0, 1.2, 12);
+  }
+
+  private buildReceptionGuide() {
+    const guide = new THREE.Group();
+    guide.position.set(0, 1.28, 6.1);
+    guide.scale.setScalar(0.68);
+
+    const coverMaterial = new THREE.MeshStandardMaterial({ color: 0xD9FF43, emissive: 0x698000, emissiveIntensity: 0.38, roughness: 0.48, metalness: 0.12 });
+    const pageMaterial = new THREE.MeshStandardMaterial({ color: 0xF3F0E4, roughness: 0.9 });
+    const leftCover = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.08, 1.65), coverMaterial);
+    const rightCover = leftCover.clone();
+    leftCover.position.x = -0.61;
+    rightCover.position.x = 0.61;
+    leftCover.rotation.z = -0.12;
+    rightCover.rotation.z = 0.12;
+    const leftPage = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.12, 1.52), pageMaterial);
+    const rightPage = leftPage.clone();
+    leftPage.position.set(-0.58, 0.08, 0);
+    rightPage.position.set(0.58, 0.08, 0);
+    leftPage.rotation.z = -0.1;
+    rightPage.rotation.z = 0.1;
+    guide.add(leftCover, rightCover, leftPage, rightPage);
+
+    const bookmark = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.16, 1.15),
+      new THREE.MeshBasicMaterial({ color: 0xEF6A67, side: THREE.DoubleSide })
+    );
+    bookmark.position.set(0.18, 0.17, 0.26);
+    bookmark.rotation.x = -Math.PI / 2;
+    guide.add(bookmark);
+
+    const haloMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending, depthWrite: false });
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.025, 12, 64), haloMaterial);
+    halo.position.y = -0.42;
+    halo.rotation.x = Math.PI / 2;
+    guide.add(halo);
+
+    const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xD9FF43, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false });
+    const glow = new THREE.Mesh(new THREE.CircleGeometry(1.25, 48), glowMaterial);
+    glow.position.y = -0.4;
+    glow.rotation.x = -Math.PI / 2;
+    guide.add(glow);
+
+    const marker = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.34), new THREE.MeshBasicMaterial({ map: TextureGenerator.createGalleryLabelTexture('VISITOR GUIDE', 'INSPECT TO BEGIN') }));
+    marker.position.set(0, 0.24, 0.25);
+    marker.rotation.x = -Math.PI / 2;
+    guide.add(marker);
+    this.scene.add(guide);
+    this.infoPoints.push({ id: 'visitor-guide', kind: 'guide', title: 'How to explore the museum', position: [0, 6.1] });
+    const baseY = guide.position.y;
+    this.animatedObjects.push({ mesh: guide, update: (time) => {
+      guide.position.y = baseY + Math.sin(time * 1.65) * 0.08;
+      guide.rotation.y = Math.sin(time * 0.48) * 0.07;
+      guide.rotation.z = Math.sin(time * 0.7) * 0.018;
+      halo.rotation.z = time * 0.24;
+      haloMaterial.opacity = 0.2 + Math.sin(time * 1.65) * 0.07;
+      glowMaterial.opacity = 0.08 + Math.sin(time * 1.65) * 0.025;
+    } });
   }
 
   // ─── ATRIUM (Central Hub) ─────────────────────────────────────
@@ -363,6 +460,22 @@ export class MuseumScene {
     this.addWall(sideW, WALL_H, WALL_THICK, (doorW / 2 + sideW / 2), WALL_H / 2, -ATRIUM_HALF);
     this.addDoorwaySign('ClayRent Pavilion', 'Modern Habitat & Asset Gallery ▲', '#E06D53', 0, -ATRIUM_HALF, 0);
     this.addColumnPair(0, -ATRIUM_HALF, doorW);
+
+    // Primary partnership display on the wall directly ahead of arriving visitors.
+    const frontAdFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(6.5, 3.65, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x171A17, metalness: 0.72, roughness: 0.25 })
+    );
+    frontAdFrame.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.28);
+    frontAdFrame.castShadow = true;
+    this.scene.add(frontAdFrame);
+    const frontAdScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(6.15, 3.35),
+      new THREE.MeshBasicMaterial({ map: TextureGenerator.createAdvertisingScreenTexture() })
+    );
+    frontAdScreen.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.39);
+    this.scene.add(frontAdScreen);
+    this.infoPoints.push({ id: 'advertise', kind: 'partnership', title: 'Advertise in the AT30 Museum', position: [-6.2, -8.2] });
 
     // East wall (opening to PosterBooking corridor)
     this.addWall(WALL_THICK, WALL_H, sideW, ATRIUM_HALF, WALL_H / 2, -(doorW / 2 + sideW / 2));

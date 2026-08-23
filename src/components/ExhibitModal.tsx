@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { ExhibitItem, DiscoveredCoupon } from '../types';
 import { soundEngine } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { ONLINE_MASTERPIECES } from '../data/artworks';
 import { X, Sparkles, Copy, Check, ExternalLink, Key, Eye, Tv, Cpu, Palette } from 'lucide-react';
+import { telemetry } from '../services/TelemetryService';
 
 interface ExhibitModalProps {
   exhibit: ExhibitItem;
@@ -22,10 +23,21 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
   const [isSolving, setIsSolving] = useState<boolean>(false);
   const [activeArtIndex, setActiveArtIndex] = useState<number>(0);
+  const modalOpenTime = useRef<number>(Date.now());
+
+  useEffect(() => {
+    modalOpenTime.current = Date.now();
+    telemetry.trackExhibitInspectOpened(exhibit.id, exhibit.brandKey, exhibit.title);
+    return () => {
+      const durationSeconds = Math.round((Date.now() - modalOpenTime.current) / 1000);
+      telemetry.trackExhibitInspectDuration(exhibit.id, exhibit.brandKey, durationSeconds);
+    };
+  }, [exhibit.id, exhibit.brandKey, exhibit.title]);
 
   const handleSolvePuzzle = () => {
     soundEngine.playClick();
     setIsSolving(true);
+    telemetry.trackEvent('clue_viewed', exhibit.brandKey, exhibit.id, { puzzleType: exhibit.puzzleType });
 
     setTimeout(() => {
       setIsSolving(false);
@@ -56,7 +68,12 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
     soundEngine.playClick();
     navigator.clipboard.writeText(exhibit.couponCode);
     setCopied(true);
+    telemetry.trackCouponCopied(exhibit.brandKey, exhibit.couponCode);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleOutboundClick = () => {
+    telemetry.trackBrandOutboundClicked(exhibit.brandKey, exhibit.redeemUrl);
   };
 
   const currentArt = ONLINE_MASTERPIECES[activeArtIndex % ONLINE_MASTERPIECES.length];
@@ -162,7 +179,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
           {/* Brand Tagline & Overview */}
           <div className="p-4 rounded-xl bg-white/[0.04] border border-white/10 space-y-2">
             <div className="text-sm font-medium text-cyan-400">
-              💡 {exhibit.brandTagline}
+              {exhibit.brandTagline}
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
               {exhibit.detailedStory}
@@ -172,7 +189,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
           {/* Key Capabilities / Features Pills */}
           <div>
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-              Platform Innovations:
+              Highlights
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {exhibit.features.map((feat, idx) => (
@@ -189,7 +206,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-cyan-400 font-semibold text-sm">
                 <Sparkles className="w-4 h-4" />
-                <span>Museum Quest Discovery</span>
+                <span>Featured exhibit</span>
               </div>
               {isRevealed ? (
                 <span className="px-2.5 py-1 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 rounded-full">
@@ -197,7 +214,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
                 </span>
               ) : (
                 <span className="px-2.5 py-1 text-xs font-medium text-amber-300 bg-amber-950/60 border border-amber-500/30 rounded-full">
-                  🔍 Hidden Clue
+                  Ready to discover
                 </span>
               )}
             </div>
@@ -230,7 +247,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Unlocked VIP Voucher:</span>
+                    <span>Reward unlocked</span>
                   </div>
                   <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
                     Saved in Passport
@@ -243,7 +260,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-black/70 border border-white/15">
                   <div className="text-center sm:text-left w-full sm:w-auto">
-                    <div className="text-[10px] uppercase font-bold text-gray-400">Passkey Promo Code:</div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Reward code</div>
                     <div className="font-mono text-lg font-black text-cyan-300 tracking-wider">
                       {exhibit.couponCode}
                     </div>
@@ -260,6 +277,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
 
                     <a
                       href={exhibit.redeemUrl}
+                      onClick={handleOutboundClick}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors border border-white/15 cursor-pointer"

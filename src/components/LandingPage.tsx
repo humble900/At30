@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ArrowRight,
+  BarChart3,
   Building2,
   ChevronRight,
   Compass,
@@ -64,7 +65,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </a>
         <div className="nav-links">
           <a href="#experience">Experience</a>
-          <a href="#partners">Partners</a>
+          <a href="#partner-roster">Partners</a>
           <a href="#enterprise">For enterprise</a>
         </div>
         
@@ -124,8 +125,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      <section className="trust-strip" id="partners">
-        <span>Featuring experiences from</span>
+      <section className="trust-strip" id="partner-roster">
+        <span>Current exhibition partners</span>
         <div>{partners.map((partner) => <strong key={partner}>{partner}</strong>)}</div>
       </section>
 
@@ -148,18 +149,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       <section className="enterprise-section" id="enterprise">
-        <div>
-          <span className="kicker">HOW IT WORKS</span>
-          <h2>Walk in. Find clues. Collect rewards.</h2>
+        <div className="enterprise-intro">
+          <span className="kicker">PARTNER WITH AT30</span>
+          <h2>Build a brand experience people can enter.</h2>
+          <p>AT30 turns product stories into explorable spaces. Partners can own a gallery, launch an interactive exhibit, or place a campaign at the museum reception.</p>
+          <div className="partner-status"><span>2026 partner programme</span><strong>Now reviewing briefs</strong></div>
         </div>
         <div className="enterprise-copy">
-          <p>Use a keyboard, mouse, or the on-screen controls to move through the museum. Your collected rewards are saved in this browser.</p>
-          <div className="enterprise-points">
-            <span>01 — Explore the galleries</span>
-            <span>02 — Inspect each exhibit</span>
-            <span>03 — Save rewards to your passport</span>
+          <div className="partner-offerings">
+            <article><span>01</span><div><h3>Branded gallery</h3><p>A dedicated environment shaped around your product, category, and visual identity.</p></div></article>
+            <article><span>02</span><div><h3>Interactive activation</h3><p>Playable product stories, discoveries, and rewards designed for repeat visits.</p></div></article>
+            <article><span>03</span><div><h3>Reception media</h3><p>High-visibility placement at the shared entrance where every museum visit begins.</p></div></article>
           </div>
-          <button className="light-cta cursor-pointer" onClick={onEnter}>Enter the experience <ArrowRight size={18} /></button>
+          <div className="partner-delivery"><BarChart3 size={19}/><p><strong>Built for accountable campaigns.</strong><span>Placement scope, interaction goals, and launch requirements are agreed before production.</span></p></div>
+          <button className="light-cta cursor-pointer" onClick={onEnter}>View the live experience <ArrowRight size={18} /></button>
         </div>
       </section>
 

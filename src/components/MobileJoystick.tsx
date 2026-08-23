@@ -11,20 +11,20 @@ export const MobileJoystick: React.FC<MobileJoystickProps> = ({ onMove }) => {
 
   const maxRadius = 45;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
     setTouching(true);
-    handleTouchMove(e);
+    updatePosition(e.clientX, e.clientY);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const updatePosition = (clientX: number, clientY: number) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    const touch = e.touches[0];
-    const dx = touch.clientX - centerX;
-    const dy = touch.clientY - centerY;
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
 
     const dist = Math.sqrt(dx * dx + dy * dy);
     const clampedDist = Math.min(dist, maxRadius);
@@ -37,6 +37,10 @@ export const MobileJoystick: React.FC<MobileJoystickProps> = ({ onMove }) => {
     onMove(clampedX / maxRadius, clampedY / maxRadius);
   };
 
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (touching) updatePosition(e.clientX, e.clientY);
+  };
+
   const handleTouchEnd = () => {
     setTouching(false);
     setKnobPos({ x: 0, y: 0 });
@@ -46,16 +50,16 @@ export const MobileJoystick: React.FC<MobileJoystickProps> = ({ onMove }) => {
   return (
     <div
       ref={containerRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      className="relative w-32 h-32 rounded-full bg-white/10 border-2 border-white/20 backdrop-blur-md flex items-center justify-center select-none touch-none shadow-2xl"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handleTouchEnd}
+      onPointerCancel={handleTouchEnd}
+      className={`mobile-joystick ${touching ? 'active' : ''}`}
+      aria-label="Move avatar"
     >
       {/* Center Draggable Knob */}
       <div
-        className={`w-14 h-14 rounded-full bg-cyan-500 border border-white/40 transform transition-transform duration-75 flex items-center justify-center ${
-          touching ? 'scale-105' : ''
-        }`}
+        className="mobile-joystick__knob"
         style={{
           transform: `translate(${knobPos.x}px, ${knobPos.y}px)`
         }}

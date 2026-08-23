@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Dices, User, X } from 'lucide-react';
+import { ArrowRight, Dices, X } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import './NameSelectModal.css';
 
@@ -42,20 +42,20 @@ export const NameSelectModal: React.FC<NameSelectModalProps> = ({ initialName = 
     <div className="registration-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="registration-dialog" role="dialog" aria-modal="true" aria-labelledby="registration-title">
         <header className="registration-header">
-          <div className="registration-heading"><span className="registration-icon"><User size={18} /></span><div><small>VISITOR SETUP</small><h2 id="registration-title">Choose your museum profile</h2></div></div>
+          <div className="registration-heading"><div><small>BEFORE YOU ENTER</small><h2 id="registration-title">Review your avatar</h2><p>Continue with this profile or customize how other visitors see you.</p></div></div>
           <button className="registration-close" onClick={onClose} aria-label="Close visitor setup"><X size={20} /></button>
         </header>
         <form className="registration-form" onSubmit={handleSubmit}>
           <div className="visitor-preview">
             <span className="visitor-avatar" style={{ backgroundColor: selectedColor }}>{name.trim().charAt(0).toUpperCase() || 'A'}</span>
-            <div><small>VISITOR PASS · {passNumber}</small><strong>{name.trim() || 'Museum visitor'}</strong><span>Progress saves in this browser</span></div>
-            <button type="button" onClick={handleRandomize}><Dices size={15} /> Random</button>
+            <div><small>VISITOR {passNumber}</small><strong>{name.trim() || 'Museum visitor'}</strong><span>Saved on this device</span></div>
+            <button type="button" onClick={handleRandomize}><Dices size={15} /> Surprise me</button>
           </div>
           <label className="registration-field"><span>Display name</span><input autoFocus value={name} onChange={(event) => setName(event.target.value)} maxLength={24} placeholder="Enter a name" /></label>
           <fieldset className="color-fieldset"><legend>Avatar color</legend><div className="color-grid">
             {COLOR_OPTIONS.map((option) => <button key={option.color} type="button" aria-pressed={selectedColor === option.color} onClick={() => setSelectedColor(option.color)}><span style={{ backgroundColor: option.color }} />{option.name}</button>)}
           </div></fieldset>
-          <button className="registration-submit" type="submit" disabled={!name.trim()}>Enter museum <ArrowRight size={18} /></button>
+          <button className="registration-submit" type="submit" disabled={!name.trim()}>Continue to museum <ArrowRight size={18} /></button>
         </form>
       </section>
     </div>

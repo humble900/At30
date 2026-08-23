@@ -19,6 +19,7 @@ export class TextureGenerator {
     this.drawArtworkFallback(ctx, art, 1024, 768);
 
     const texture = new THREE.CanvasTexture(canvas);
+    texture.userData = { artworkIndex: artIndex % ONLINE_MASTERPIECES.length };
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
 
@@ -287,6 +288,51 @@ export class TextureGenerator {
   }
 
   /** Welcome wall canvas for wing lobby rooms */
+  public static createAdvertisingScreenTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 576;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#F0EEE7';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#171A17';
+    ctx.fillRect(34, 34, 956, 508);
+    ctx.fillStyle = '#D9FF43';
+    ctx.fillRect(72, 72, 184, 34);
+    ctx.fillStyle = '#171A17';
+    ctx.font = '700 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('AT30 PARTNERS', 164, 95);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#F4F5F1';
+    ctx.font = '700 74px Inter, sans-serif';
+    ctx.fillText('Advertise here.', 72, 254);
+    ctx.fillStyle = '#ADB4AA';
+    ctx.font = '400 28px Inter, sans-serif';
+    ctx.fillText('Put your brand inside the museum experience.', 72, 318);
+    ctx.strokeStyle = '#454A43';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(72, 382);
+    ctx.lineTo(952, 382);
+    ctx.stroke();
+    ctx.fillStyle = '#D9FF43';
+    ctx.font = '600 24px Inter, sans-serif';
+    ctx.fillText('WhatsApp  +1 409 422 9714', 72, 452);
+    ctx.fillStyle = '#25D366';
+    ctx.beginPath();
+    ctx.arc(912, 444, 34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#171A17';
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.arc(912, 444, 15, .45, 4.75);
+    ctx.stroke();
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }
+
   public static createWelcomeWallTexture(brandName: string, tagline: string, color: string): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
