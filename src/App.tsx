@@ -21,6 +21,8 @@ import { soundEngine } from './utils/audio';
 import { MultiplayerManager } from './multiplayer/MultiplayerManager';
 import { RemotePlayerRegistry } from './multiplayer/RemotePlayerRegistry';
 import type { MultiplayerConnectionState } from './multiplayer/types';
+import { LegalPage } from './components/LegalPage';
+import { CanopyRunExperience } from './components/CanopyRunExperience';
 
 interface MuseumExperienceProps {
   visitorName: string;
@@ -488,8 +490,9 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   );
 };
 
-export const App: React.FC = () => {
+const MuseumApp: React.FC = () => {
   const [hasEntered, setHasEntered] = useState(false);
+  const [selectedExperience, setSelectedExperience] = useState<'museum' | 'canopy'>('museum');
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   
   const [visitorName, setVisitorName] = useState<string>(() => {
@@ -505,8 +508,10 @@ export const App: React.FC = () => {
   };
 
   const handleEnterMuseum = () => {
+    setSelectedExperience('museum');
     setIsNameModalOpen(true);
   };
+  const handleEnterCanopy = () => { setSelectedExperience('canopy'); setIsNameModalOpen(true); };
 
   const handleConfirmProfile = (name: string, color: string) => {
     // This handler runs directly from the player's Continue button, satisfying the
@@ -543,26 +548,35 @@ export const App: React.FC = () => {
           savedName={visitorName}
           savedColor={avatarColor}
           onEnter={handleEnterMuseum}
+          onEnterCanopy={handleEnterCanopy}
           onRequestCustomize={handleOpenRegistration}
         />
       ) : (
-        <MuseumExperience
+        selectedExperience === 'museum' ? <MuseumExperience
           visitorName={visitorName}
           avatarColor={avatarColor}
           onExitToReception={handleExitToReception}
-        />
+        /> : <CanopyRunExperience visitorName={visitorName} avatarColor={avatarColor} onExit={handleExitToReception} />
       )}
 
       {isNameModalOpen && (
         <NameSelectModal
           initialName={visitorName}
           initialColor={avatarColor}
+          destination={selectedExperience}
           onConfirm={handleConfirmProfile}
           onClose={() => setIsNameModalOpen(false)}
         />
       )}
     </>
   );
+};
+
+export const App: React.FC = () => {
+  const route = window.location.pathname.replace(/\/$/, '') || '/';
+  if (route === '/privacy') return <LegalPage type="privacy" />;
+  if (route === '/terms') return <LegalPage type="terms" />;
+  return <MuseumApp />;
 };
 
 export default App;

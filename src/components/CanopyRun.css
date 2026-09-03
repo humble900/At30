@@ -1,0 +1,1304 @@
+/* ==========================================================================
+   Touch Grass: Canopy Run (Experience 002) — Game Stylesheet
+   ========================================================================== */
+
+:root {
+  --canopy-gold: #F59E0B;
+  --canopy-gold-glow: rgba(245, 158, 11, 0.35);
+  --canopy-emerald: #10B981;
+  --canopy-sky: #38BDF8;
+  --canopy-bg-dark: #090D0E;
+  --canopy-card-bg: rgba(15, 23, 27, 0.82);
+  --canopy-border: rgba(255, 255, 255, 0.12);
+  --canopy-border-gold: rgba(245, 158, 11, 0.4);
+}
+
+.canopy-experience-shell {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--canopy-bg-dark);
+  color: #F8FAFC;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+  z-index: 1000;
+}
+
+.canopy-3d-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   1. Lobby & Pre-Game Experience Screen
+   -------------------------------------------------------------------------- */
+
+.canopy-lobby-view {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 20%, #172E27 0%, #08110E 80%);
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.canopy-lobby-container {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.canopy-lobby-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.canopy-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--canopy-border);
+  color: #E2E8F0;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.canopy-back-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFF;
+}
+
+.canopy-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid var(--canopy-border-gold);
+  color: var(--canopy-gold);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.live-pulse {
+  width: 8px;
+  height: 8px;
+  background-color: var(--canopy-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--canopy-gold);
+  animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.canopy-lobby-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .canopy-lobby-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.canopy-hero-text .canopy-kicker {
+  display: block;
+  color: var(--canopy-emerald);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.canopy-hero-text h1 {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin: 0 0 14px 0;
+}
+
+.canopy-lead {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #94A3B8;
+  margin: 0 0 24px 0;
+}
+
+/* Prize Ladder Banner Card */
+.canopy-prize-ladder-card {
+  background: rgba(24, 34, 30, 0.7);
+  border: 1px solid var(--canopy-border-gold);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  margin-bottom: 24px;
+}
+
+.canopy-prize-ladder-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.gold-trophy {
+  color: var(--canopy-gold);
+}
+
+.total-pool {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--canopy-gold);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.prize-tiers-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.prize-tier-badge {
+  background: rgba(10, 16, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tier-pos {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94A3B8;
+}
+
+.tier-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFF;
+  margin: 4px 0 2px 0;
+}
+
+.tier-desc {
+  font-size: 11px;
+  color: #64748B;
+  margin-bottom: 8px;
+}
+
+.tier-state {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.tier-state.available {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--canopy-emerald);
+}
+
+.tier-state.pending_review {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--canopy-gold);
+}
+
+/* Mode Selection Cards */
+.canopy-mode-select .section-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.mode-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .mode-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mode-card {
+  background: rgba(15, 23, 27, 0.7);
+  border: 1px solid var(--canopy-border);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #F8FAFC;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-card:hover {
+  background: rgba(24, 34, 38, 0.85);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.mode-card.selected {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: var(--canopy-gold);
+  box-shadow: 0 0 16px var(--canopy-gold-glow);
+}
+
+.mode-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.mode-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94A3B8;
+}
+
+.mode-pill.live {
+  background: var(--canopy-gold);
+  color: #000;
+}
+
+.mode-card strong {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.mode-card p {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Launch Box */
+.canopy-launch-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.canopy-launch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #0F172A;
+  border: none;
+  padding: 18px 28px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.canopy-launch-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.5);
+}
+
+.canopy-launch-btn:active {
+  transform: translateY(0);
+}
+
+.canopy-quick-links {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.canopy-quick-links button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.canopy-quick-links button:hover {
+  color: #FFF;
+}
+
+/* Avatar Preview Card (Right Column) */
+.canopy-avatar-preview-card {
+  background: rgba(15, 23, 27, 0.7);
+  border: 1px solid var(--canopy-border);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.canopy-avatar-preview-card .card-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.preview-3d-stage {
+  width: 100%;
+  height: 320px;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 50%, rgba(30, 58, 48, 0.4) 0%, transparent 80%);
+}
+
+.customizer-section {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.canopy-name-input {
+  width: 100%;
+  background: rgba(10, 16, 14, 0.9);
+  border: 1px solid var(--canopy-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #FFF;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.customizer-section label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin-bottom: 10px;
+}
+
+.color-swatches-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.active {
+  border-color: #FFF;
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.glasses-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--canopy-border);
+}
+
+.glasses-toggle-row span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #CBD5E1;
+}
+
+.canopy-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--canopy-border);
+  color: #94A3B8;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.canopy-pill-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--canopy-sky);
+  color: var(--canopy-sky);
+}
+
+/* --------------------------------------------------------------------------
+   2. Countdown Overlay
+   -------------------------------------------------------------------------- */
+
+.canopy-countdown-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.canopy-countdown-number {
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--canopy-gold);
+  text-shadow: 0 0 40px var(--canopy-gold);
+  animation: countdownPop 0.85s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes countdownPop {
+  0% { transform: scale(0.6); opacity: 0; }
+  30% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+.canopy-countdown-sub {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FFF;
+}
+
+/* --------------------------------------------------------------------------
+   3. In-Game HUD
+   -------------------------------------------------------------------------- */
+
+.canopy-hud-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  padding: env(safe-area-inset-top, 24px) 24px env(safe-area-inset-bottom, 24px) 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.canopy-hud-card {
+  pointer-events: auto;
+  background: var(--canopy-card-bg);
+  border: 1px solid var(--canopy-border);
+  border-radius: 16px;
+  padding: 14px 18px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.canopy-hud-top-left {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.canopy-hud-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.canopy-hud-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--canopy-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--canopy-emerald);
+}
+
+.canopy-hud-tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+}
+
+.canopy-hud-timer {
+  font-size: 32px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #FFF;
+  letter-spacing: -0.02em;
+}
+
+.canopy-hud-checkpoint-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #CBD5E1;
+}
+
+.canopy-hud-checkpoint-label span {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.canopy-hud-top-right {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.canopy-hud-pb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.canopy-hud-pb span {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.canopy-hud-pb strong {
+  font-size: 15px;
+  color: var(--canopy-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.canopy-hud-icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--canopy-border);
+  color: #CBD5E1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Context Prompt Pill */
+.canopy-hud-prompt {
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 27, 0.85);
+  border: 1px solid var(--canopy-gold);
+  color: var(--canopy-gold);
+  padding: 8px 20px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 20px var(--canopy-gold-glow);
+  animation: promptPulse 1.2s infinite alternate;
+}
+
+@keyframes promptPulse {
+  0% { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(1.05); }
+}
+
+/* Bottom Center Progress & Stamina */
+.canopy-hud-bottom-center {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 320px;
+  max-width: 90vw;
+}
+
+.canopy-hud-route-bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+.canopy-hud-route-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #F59E0B);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.canopy-hud-route-nodes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.canopy-hud-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1E293B;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.canopy-hud-node.active {
+  background: var(--canopy-gold);
+  border-color: #FFF;
+  box-shadow: 0 0 8px var(--canopy-gold);
+  transform: scale(1.2);
+}
+
+.canopy-hud-stamina-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.canopy-hud-stamina-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.canopy-hud-stamina-fill {
+  height: 100%;
+  background: var(--canopy-sky);
+  border-radius: 9999px;
+  transition: width 0.1s linear;
+}
+
+.canopy-hud-stamina-fill.low {
+  background: #EF4444;
+}
+
+.canopy-hud-stamina-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.05em;
+}
+
+.canopy-hud-recoveries {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  color: #CBD5E1;
+}
+
+/* Mobile Touch Controls */
+.canopy-hud-mobile-controls {
+  display: none;
+  pointer-events: auto;
+  position: absolute;
+  inset: 0;
+}
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .canopy-hud-mobile-controls {
+    display: block;
+  }
+}
+
+.canopy-hud-mobile-actions {
+  position: absolute;
+  bottom: 32px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.canopy-hud-action-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(15, 23, 27, 0.75);
+  border: 2px solid var(--canopy-border);
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+.canopy-hud-action-btn.jump {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(217, 119, 6, 0.6) 100%);
+  border-color: var(--canopy-gold);
+}
+
+.canopy-hud-action-btn.sprint {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.3) 0%, rgba(37, 99, 235, 0.5) 100%);
+  border-color: var(--canopy-sky);
+}
+
+.canopy-screen-notice {
+  position: absolute;
+  top: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 38, 38, 0.85);
+  color: #FFF;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  z-index: 25;
+}
+
+/* --------------------------------------------------------------------------
+   4. Modals & Finish Card
+   -------------------------------------------------------------------------- */
+
+.canopy-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.canopy-finish-card {
+  width: 100%;
+  max-width: 580px;
+  background: var(--canopy-card-bg);
+  border: 1px solid var(--canopy-border-gold);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 32px var(--canopy-gold-glow);
+  animation: cardScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardScaleUp {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.canopy-finish-header {
+  text-align: center;
+}
+
+.canopy-finish-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--canopy-gold);
+  letter-spacing: 0.12em;
+}
+
+.canopy-finish-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 6px 0 0 0;
+}
+
+.canopy-finish-time-box {
+  background: rgba(10, 16, 14, 0.85);
+  border: 1px solid var(--canopy-border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.canopy-finish-time {
+  font-size: 52px;
+  font-weight: 900;
+  color: #FFF;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.canopy-finish-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.metric-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #CBD5E1;
+}
+
+/* Prize Box in Finish Card */
+.canopy-prize-box {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border: 1px solid var(--canopy-border-gold);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.canopy-prize-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.prize-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--canopy-gold);
+  letter-spacing: 0.08em;
+}
+
+.canopy-prize-banner h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 2px 0 0 0;
+  color: #FFF;
+}
+
+.canopy-prize-desc {
+  font-size: 13px;
+  color: #CBD5E1;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.canopy-claim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.canopy-input-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin-bottom: 6px;
+}
+
+.canopy-input-group input {
+  width: 100%;
+  background: rgba(10, 16, 14, 0.9);
+  border: 1px solid var(--canopy-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #FFF;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.canopy-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: #94A3B8;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.inline-link {
+  background: none;
+  border: none;
+  color: var(--canopy-gold);
+  text-decoration: underline;
+  padding: 0;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.canopy-submit-claim-btn {
+  background: var(--canopy-gold);
+  color: #0F172A;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.canopy-submit-claim-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.canopy-claim-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
+
+.success-icon {
+  color: var(--canopy-emerald);
+  margin-bottom: 8px;
+}
+
+.canopy-review-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 10px;
+}
+
+.canopy-nonprize-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.canopy-nonprize-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.canopy-nonprize-header p {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 4px 0 0 0;
+}
+
+/* Action Buttons */
+.canopy-finish-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.canopy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.canopy-btn.primary {
+  background: var(--canopy-gold);
+  color: #0F172A;
+}
+
+.canopy-btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--canopy-border);
+  color: #FFF;
+}
+
+.canopy-btn.text-only {
+  background: none;
+  color: #94A3B8;
+}
+
+.canopy-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   5. Leaderboard & Rules Modals
+   -------------------------------------------------------------------------- */
+
+.canopy-leaderboard-modal,
+.canopy-rules-modal {
+  width: 100%;
+  max-width: 640px;
+  background: var(--canopy-card-bg);
+  border: 1px solid var(--canopy-border);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 85vh;
+}
+
+.canopy-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.canopy-modal-head .title-wrap {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.canopy-modal-head h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.canopy-modal-head p {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 2px 0 0 0;
+}
+
+.canopy-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #94A3B8;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.canopy-leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.canopy-lb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 16, 14, 0.6);
+  border: 1px solid var(--canopy-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.canopy-lb-row.rank-1 {
+  border-color: var(--canopy-border-gold);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.lb-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.avatar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.lb-meta {
+  display: flex;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.route-tag, .recoveries-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #94A3B8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.lb-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+  color: var(--canopy-gold);
+}
+
+.canopy-rules-content {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #CBD5E1;
+  padding-right: 6px;
+}
+
+.rules-section h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFF;
+  margin: 0 0 6px 0;
+}
+
+.rules-prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.rules-prize-card {
+  background: rgba(10, 16, 14, 0.8);
+  border: 1px solid var(--canopy-border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rules-prize-card .badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--canopy-gold);
+}
+
+.rules-prize-card strong {
+  font-size: 16px;
+  margin: 2px 0;
+}
+
+.rules-prize-card small {
+  font-size: 10px;
+  color: #64748B;
+}
+
+.rules-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rules-section li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.canopy-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.spin {
+  animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

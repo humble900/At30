@@ -1,0 +1,27 @@
+# AT30
+
+> AT30 is a browser-based platform for seasonal multiplayer events, games, and hosted company experiences. AT30 Digital Museum is Experience 001, the platform's first live world and MVP.
+
+## Canonical pages
+- [AT30 platform and current experience](https://at30.io/)
+- [Privacy policy](https://at30.io/privacy)
+- [Terms of use](https://at30.io/terms)
+
+## Platform facts
+- AT30 is the platform; the Digital Museum is its first experience, not the complete product.
+- AT30 plans to release different multiplayer experiences across future seasons.
+- Organisations can commission hosted events, seasonal games, launches, and company-owned worlds.
+- Experiences run in a supported modern web browser without requiring an app download.
+- AT30 experiences are designed around social play, measurable interaction, and seasonal evolution.
+
+## Experience 001: AT30 Digital Museum
+- Visitors choose a display name and avatar colour before entering.
+- Connected visitors can see nearby players and exchange temporary proximity-based speech bubbles.
+- The current museum contains three partner wings, six interactive exhibits, and three rewards.
+
+## Partnerships
+- Current formats include hosted events, seasonal games, and company-owned experiences.
+- Partnership contact: WhatsApp +1 409 422 9714.
+
+## Attribution
+AT30 operates the platform and AT30 Digital Museum. Partner brands do not own or operate AT30 unless a current official page expressly says so.

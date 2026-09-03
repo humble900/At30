@@ -3,7 +3,7 @@ import { ArrowRight, Dices, X } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import './NameSelectModal.css';
 
-interface NameSelectModalProps { initialName?: string; initialColor?: string; onConfirm: (name: string, color: string) => void; onClose: () => void; }
+interface NameSelectModalProps { initialName?: string; initialColor?: string; destination?: 'museum' | 'canopy'; onConfirm: (name: string, color: string) => void; onClose: () => void; }
 
 const COLOR_OPTIONS = [
   { name: 'Cyan', color: '#00F0FF' }, { name: 'Amber', color: '#F59E0B' },
@@ -12,7 +12,7 @@ const COLOR_OPTIONS = [
 ];
 const CURATOR_NAMES = ['Curator Vance', 'Elena Rostova', 'Architect Kai', 'Dr. Soren Chen', 'Explorer Orion', 'Maya Sterling'];
 
-export const NameSelectModal: React.FC<NameSelectModalProps> = ({ initialName = '', initialColor = '#00F0FF', onConfirm, onClose }) => {
+export const NameSelectModal: React.FC<NameSelectModalProps> = ({ initialName = '', initialColor = '#00F0FF', destination = 'museum', onConfirm, onClose }) => {
   const [name, setName] = useState(initialName || 'Curator');
   const [selectedColor, setSelectedColor] = useState(initialColor);
   const passNumber = useMemo(() => Math.abs(name.split('').reduce((a, b) => (a << 5) - a + b.charCodeAt(0), 0) % 9000 + 1000), [name]);
@@ -55,7 +55,8 @@ export const NameSelectModal: React.FC<NameSelectModalProps> = ({ initialName = 
           <fieldset className="color-fieldset"><legend>Avatar color</legend><div className="color-grid">
             {COLOR_OPTIONS.map((option) => <button key={option.color} type="button" aria-pressed={selectedColor === option.color} onClick={() => setSelectedColor(option.color)}><span style={{ backgroundColor: option.color }} />{option.name}</button>)}
           </div></fieldset>
-          <button className="registration-submit" type="submit" disabled={!name.trim()}>Continue to museum <ArrowRight size={18} /></button>
+          <p className="registration-notice">By continuing, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Policy</a>, including museum interaction and position analytics.</p>
+          <button className="registration-submit" type="submit" disabled={!name.trim()}>Continue to {destination === 'canopy' ? 'Canopy Run' : 'museum'} <ArrowRight size={18} /></button>
         </form>
       </section>
     </div>

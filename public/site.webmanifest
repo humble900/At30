@@ -1,0 +1,12 @@
+{
+  "name": "AT30 — Multiplayer Events & Games",
+  "short_name": "AT30",
+  "description": "Seasonal multiplayer events, games, and hosted company experiences in your browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#101310",
+  "theme_color": "#101310",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
