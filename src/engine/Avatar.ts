@@ -16,13 +16,26 @@ export class Avatar {
     });
     this.group.add(this.riggedAvatar.group);
 
-    // Soft Ground Contact Shadow Decal
-    const shadowGeo = new THREE.CircleGeometry(0.35, 24);
+    // Soft Ground Contact Ambient Occlusion Shadow Decal
+    const shadowCanvas = document.createElement('canvas');
+    shadowCanvas.width = 128;
+    shadowCanvas.height = 128;
+    const sCtx = shadowCanvas.getContext('2d')!;
+    const sGrad = sCtx.createRadialGradient(64, 64, 6, 64, 64, 62);
+    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+    sGrad.addColorStop(0.4, 'rgba(0, 0, 0, 0.35)');
+    sGrad.addColorStop(0.8, 'rgba(0, 0, 0, 0.08)');
+    sGrad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+    sCtx.fillStyle = sGrad;
+    sCtx.fillRect(0, 0, 128, 128);
+
+    const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+    const shadowGeo = new THREE.PlaneGeometry(0.85, 0.85);
     shadowGeo.rotateX(-Math.PI / 2);
     const shadowMat = new THREE.MeshBasicMaterial({
-      color: 0x000000,
+      map: shadowTex,
       transparent: true,
-      opacity: 0.35
+      depthWrite: false
     });
     this.shadowDecal = new THREE.Mesh(shadowGeo, shadowMat);
     this.shadowDecal.position.y = 0.02;
@@ -31,6 +44,11 @@ export class Avatar {
 
   public updateName(name: string) {
     this.riggedAvatar.updateNameTag(name);
+  }
+
+  /** Hide the floating name card (local player should not see their own). */
+  public hideNameTag() {
+    this.riggedAvatar.hideNameTag();
   }
 
   public setColor(color: string) {
@@ -64,6 +82,8 @@ export class Avatar {
   public dispose() {
     this.riggedAvatar.dispose();
     this.shadowDecal.geometry.dispose();
-    (this.shadowDecal.material as THREE.Material).dispose();
+    const mat = this.shadowDecal.material as THREE.MeshBasicMaterial;
+    mat.map?.dispose();
+    mat.dispose();
   }
 }

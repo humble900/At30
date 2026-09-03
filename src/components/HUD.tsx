@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowUpCircle, Eye, Gift, HelpCircle, LogOut, Maximize, MessageCircle, Minimize, Send, Users, Volume2, VolumeX, Zap } from 'lucide-react';
+import { ArrowUpCircle, Eye, Gamepad2, Gift, HelpCircle, LogOut, Maximize, MessageCircle, Minimize, Send, Users, Volume2, VolumeX, Zap } from 'lucide-react';
 import type { BrandKey, DiscoveredCoupon, ExhibitItem, PlayerPosition } from '../types';
 import { soundEngine } from '../utils/audio';
 import { MiniMap } from './MiniMap';
@@ -20,6 +20,7 @@ interface HUDProps {
   onJump?: () => void; onSprintToggle?: (isSprinting: boolean) => void;
   multiplayerState: MultiplayerConnectionState; onlineCount: number; onSendSpeech: (text: string) => boolean;
   speechTarget: { sessionId: string; displayName: string } | null; onClearSpeechTarget: () => void;
+  totalPlayedCount?: number;
 }
 
 export const HUD: React.FC<HUDProps> = ({
@@ -27,6 +28,7 @@ export const HUD: React.FC<HUDProps> = ({
   onToggleAudio, onOpenPassport, onOpenHelp, onOpenExit, onInspectExhibit, onInspectArtwork, onInspectInfoPoint, onJoystickMove, onJump, onSprintToggle,
   multiplayerState, onlineCount, onSendSpeech,
   speechTarget, onClearSpeechTarget,
+  totalPlayedCount,
 }) => {
   const totalUnlocked = Object.values(discoveredCodes).filter(Boolean).length;
   const [isSprinting, setIsSprinting] = useState(false);
@@ -54,7 +56,13 @@ export const HUD: React.FC<HUDProps> = ({
         </div>
         <div className="museum-objective"><small>CURRENT OBJECTIVE</small><strong>{totalUnlocked === 3 ? 'Collection complete' : `Find ${3 - totalUnlocked} remaining reward${3 - totalUnlocked === 1 ? '' : 's'}`}</strong></div>
         <div className="museum-actions">
+          <span className="played-count-badge" title="Total visitors who have played the AT30 Digital Museum">
+            <Gamepad2 size={15} />
+            <span><strong>{(totalPlayedCount ?? 10).toLocaleString()}</strong> played</span>
+          </span>
+
           <span className={`online-count ${multiplayerState}`} title={`Multiplayer: ${multiplayerState}`}><Users size={15} />{onlineCount}</span>
+
           <button className="passport-button" onClick={onOpenPassport}><Gift size={17} /><span>Passport</span><strong>{totalUnlocked}/3</strong></button>
           <button className="speech-button" onClick={() => setIsSpeechOpen((open) => !open)} aria-label="Speak to nearby visitors" title="Speak to nearby visitors"><MessageCircle size={17} /></button>
           <button className="audio-button" onClick={onToggleAudio} aria-label={isAudioMuted ? 'Unmute audio' : 'Mute audio'} title={isAudioMuted ? 'Unmute audio' : 'Mute audio'}>{isAudioMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}</button>

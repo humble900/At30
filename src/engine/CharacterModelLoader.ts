@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { TextureGenerator } from './TextureGenerator';
 
 export interface RiggedCharacterAsset {
   model: THREE.Group;
@@ -99,42 +100,79 @@ export class CharacterModelLoader {
     const rootGroup = new THREE.Group();
     rootGroup.name = 'RiggedHumanoidRoot';
 
-    // ── Curated AAA Colorway & Materials (Tuned for Outdoor Sunlight) ──
-    const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xD9A07E,
-      roughness: 0.65,
-      metalness: 0.02
-    });
+    const isDefaultCyan = jacketColorHex.toUpperCase() === '#00F0FF';
+    const suitBaseColor = isDefaultCyan ? '#2B2F38' : jacketColorHex;
 
+    // ── Procedural PBR Textures ──
+    const fabricNormal = TextureGenerator.createFabricNormalMap();
+    const skinNormal = TextureGenerator.createSkinNormalMap();
+    const leatherNormal = TextureGenerator.createLeatherNormalMap();
+    const faceTexture = TextureGenerator.createCuratorFaceTexture();
+    const badgeTexture = TextureGenerator.createCuratorBadgeTexture();
+
+    // ── Curated Materials Matching Vance Reference ──
     const suitMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(jacketColorHex),
-      roughness: 0.65,
-      metalness: 0.08
-    });
-
-    const darkPantsMat = new THREE.MeshStandardMaterial({
-      color: 0x14171F,
+      color: new THREE.Color(suitBaseColor),
       roughness: 0.82,
-      metalness: 0.05
+      metalness: 0.04,
+      normalMap: fabricNormal
     });
 
-    const visorMat = new THREE.MeshStandardMaterial({
-      color: 0x00D4FF,
-      emissive: 0x007799,
-      emissiveIntensity: 0.45,
-      roughness: 0.15,
-      metalness: 0.85
+    const shirtMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#0E9AA8'), // Iconic teal dress shirt
+      roughness: 0.68,
+      metalness: 0.02,
+      normalMap: fabricNormal
     });
 
-    const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x00F0FF,
-      emissive: 0x00C8EE,
-      emissiveIntensity: 0.7
+    const trousersMat = new THREE.MeshStandardMaterial({
+      color: 0x252830, // Charcoal tailored trousers
+      roughness: 0.84,
+      metalness: 0.04,
+      normalMap: fabricNormal
+    });
+
+    const skinMat = new THREE.MeshStandardMaterial({
+      color: 0xD69F82, // Warm Mediterranean/Caucasian skin
+      roughness: 0.58,
+      metalness: 0.0,
+      normalMap: skinNormal,
+      normalScale: new THREE.Vector2(0.25, 0.25)
+    });
+
+    const faceMat = new THREE.MeshStandardMaterial({
+      map: faceTexture,
+      roughness: 0.55,
+      metalness: 0.0
+    });
+
+    const hairMat = new THREE.MeshStandardMaterial({
+      color: 0x221B17, // Natural dark brunette/charcoal
+      roughness: 0.74,
+      metalness: 0.04
+    });
+
+    const shoeMat = new THREE.MeshStandardMaterial({
+      color: 0x16171B, // Polished black/charcoal dress leather
+      roughness: 0.36,
+      metalness: 0.08,
+      normalMap: leatherNormal
     });
 
     const shoeSoleMat = new THREE.MeshStandardMaterial({
-      color: 0xE5E7EB,
-      roughness: 0.6
+      color: 0x0E0F12,
+      roughness: 0.85
+    });
+
+    const badgeMat = new THREE.MeshStandardMaterial({
+      map: badgeTexture,
+      roughness: 0.25,
+      metalness: 0.75
+    });
+
+    const buttonMat = new THREE.MeshStandardMaterial({
+      color: 0x121418,
+      roughness: 0.3
     });
 
     const mkMesh = (geo: THREE.BufferGeometry, mat: THREE.Material): THREE.Mesh => {
@@ -207,102 +245,288 @@ export class CharacterModelLoader {
     const skeleton = new THREE.Skeleton(bones);
     rootGroup.add(rootBone);
 
-    // ── 2. Attach Mesh Components to Corresponding Bones ──
+    // ── 2. Sculpted Anatomical Character Attachments ──
 
-    // PELVIS / HIPS
-    const pelvisGeo = new THREE.BoxGeometry(0.38, 0.16, 0.24);
-    hipsBone.add(mkMesh(pelvisGeo, darkPantsMat));
+    // ── PELVIS & TROUSER TOP ──
+    const pelvisGeo = new THREE.BoxGeometry(0.36, 0.16, 0.22);
+    const pelvisMesh = mkMesh(pelvisGeo, trousersMat);
+    pelvisMesh.name = 'CharacterSuitPelvis';
+    hipsBone.add(pelvisMesh);
 
-    // SPINE / LOWER TORSO
-    const waistGeo = new THREE.BoxGeometry(0.42, 0.2, 0.26);
-    spineBone.add(mkMesh(waistGeo, suitMat));
+    // ── SPINE / LOWER JACKET WAIST ──
+    const waistGeo = new THREE.BoxGeometry(0.40, 0.20, 0.24);
+    const waistMesh = mkMesh(waistGeo, suitMat);
+    waistMesh.name = 'CharacterSuitWaist';
+    spineBone.add(waistMesh);
 
-    // CHEST / UPPER TORSO
-    const chestGeo = new THREE.BoxGeometry(0.48, 0.32, 0.28);
-    const chestMesh = mkMesh(chestGeo, suitMat);
-    chestMesh.name = 'CharacterSuitChest';
-    chestBone.add(chestMesh);
+    // Waist button (lower suit button)
+    const buttonGeo = new THREE.CylinderGeometry(0.013, 0.013, 0.008, 12);
+    buttonGeo.rotateX(Math.PI / 2);
+    const waistButton = mkMesh(buttonGeo, buttonMat);
+    waistButton.position.set(0, 0.04, 0.125);
+    spineBone.add(waistButton);
 
-    // Glowing Chest Arc Reactor Core
-    const coreGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.04, 16);
-    coreGeo.rotateX(Math.PI / 2);
-    const coreMesh = mkMesh(coreGeo, coreMat);
-    coreMesh.position.set(0, 0.04, 0.15);
-    chestBone.add(coreMesh);
+    // ── CHEST / TAILORED SUIT JACKET & TEAL SHIRT ──
+    // Base Teal Collared Dress Shirt
+    const shirtChestGeo = new THREE.BoxGeometry(0.37, 0.32, 0.22);
+    chestBone.add(mkMesh(shirtChestGeo, shirtMat));
 
-    // Explorer Backpack
-    const packGeo = new THREE.BoxGeometry(0.34, 0.42, 0.16);
-    const packMesh = mkMesh(packGeo, darkPantsMat);
-    packMesh.position.set(0, 0.02, -0.2);
-    chestBone.add(packMesh);
+    // Tailored Suit Jacket Outer Shell (Back, Sides & Shoulders)
+    const jacketBackGeo = new THREE.BoxGeometry(0.44, 0.33, 0.14);
+    jacketBackGeo.translate(0, 0, -0.06);
+    const jacketBackMesh = mkMesh(jacketBackGeo, suitMat);
+    jacketBackMesh.name = 'CharacterSuitChestBack';
+    chestBone.add(jacketBackMesh);
 
-    // NECK
-    const neckGeo = new THREE.CylinderGeometry(0.07, 0.08, 0.12, 10);
-    neckBone.add(mkMesh(neckGeo, skinMat));
+    // Jacket Left Chest Flap
+    const jacketLGeo = new THREE.BoxGeometry(0.14, 0.32, 0.12);
+    jacketLGeo.translate(-0.14, 0, 0.07);
+    const jacketLMesh = mkMesh(jacketLGeo, suitMat);
+    jacketLMesh.name = 'CharacterSuitChestL';
+    chestBone.add(jacketLMesh);
 
-    // HEAD
-    const headGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-    headBone.add(mkMesh(headGeo, skinMat));
+    // Jacket Right Chest Flap
+    const jacketRGeo = new THREE.BoxGeometry(0.14, 0.32, 0.12);
+    jacketRGeo.translate(0.14, 0, 0.07);
+    const jacketRMesh = mkMesh(jacketRGeo, suitMat);
+    jacketRMesh.name = 'CharacterSuitChestR';
+    chestBone.add(jacketRMesh);
 
-    // Tactical Explorer Cap / Hair
-    const capGeo = new THREE.BoxGeometry(0.32, 0.11, 0.32);
-    const capMesh = mkMesh(capGeo, darkPantsMat);
-    capMesh.position.y = 0.11;
-    headBone.add(capMesh);
+    // Suit Notched Lapels (Left & Right)
+    const lapelGeoL = new THREE.BoxGeometry(0.065, 0.24, 0.015);
+    lapelGeoL.rotateZ(0.24);
+    const lapelL = mkMesh(lapelGeoL, suitMat);
+    lapelL.name = 'CharacterSuitLapelL';
+    lapelL.position.set(-0.075, 0.03, 0.135);
+    chestBone.add(lapelL);
 
-    // Cyber Visor / Glasses
-    const visorGeo = new THREE.BoxGeometry(0.26, 0.08, 0.06);
-    const visorMesh = mkMesh(visorGeo, visorMat);
-    visorMesh.position.set(0, 0.02, 0.16);
-    headBone.add(visorMesh);
+    const lapelGeoR = new THREE.BoxGeometry(0.065, 0.24, 0.015);
+    lapelGeoR.rotateZ(-0.24);
+    const lapelR = mkMesh(lapelGeoR, suitMat);
+    lapelR.name = 'CharacterSuitLapelR';
+    lapelR.position.set(0.075, 0.03, 0.135);
+    chestBone.add(lapelR);
 
-    // ARMS
-    const armGeo = new THREE.BoxGeometry(0.13, 0.3, 0.13);
+    // Top Suit Button
+    const chestButton = mkMesh(buttonGeo, buttonMat);
+    chestButton.position.set(0, -0.08, 0.135);
+    chestBone.add(chestButton);
+
+    // Left Breast Pocket & "AT30 / CURATOR VANCE" ID Badge
+    const pocketGeo = new THREE.BoxGeometry(0.085, 0.012, 0.008);
+    const pocket = mkMesh(pocketGeo, suitMat);
+    pocket.position.set(-0.115, 0.055, 0.134);
+    chestBone.add(pocket);
+
+    const badgeGeo = new THREE.BoxGeometry(0.075, 0.028, 0.006);
+    const badgeMesh = mkMesh(badgeGeo, badgeMat);
+    badgeMesh.position.set(-0.115, 0.068, 0.140);
+    chestBone.add(badgeMesh);
+
+    // Teal Shirt Collar Wings (Unbuttoned Executive Look)
+    const collarWingGeoL = new THREE.BoxGeometry(0.055, 0.032, 0.01);
+    collarWingGeoL.rotateZ(0.4);
+    const collarL = mkMesh(collarWingGeoL, shirtMat);
+    collarL.position.set(-0.045, 0.15, 0.118);
+    chestBone.add(collarL);
+
+    const collarWingGeoR = new THREE.BoxGeometry(0.055, 0.032, 0.01);
+    collarWingGeoR.rotateZ(-0.4);
+    const collarR = mkMesh(collarWingGeoR, shirtMat);
+    collarR.position.set(0.045, 0.15, 0.118);
+    chestBone.add(collarR);
+
+    // Exposed Collarbone / Neck V-opening Skin
+    const vSkinGeo = new THREE.BufferGeometry();
+    const vSkinVerts = new Float32Array([
+      -0.035, 0.14, 0.114,
+       0.035, 0.14, 0.114,
+       0.0,   0.03, 0.114
+    ]);
+    vSkinGeo.setAttribute('position', new THREE.BufferAttribute(vSkinVerts, 3));
+    vSkinGeo.computeVertexNormals();
+    const vSkinMesh = new THREE.Mesh(vSkinGeo, skinMat);
+    chestBone.add(vSkinMesh);
+
+    // ── NECK ──
+    const neckGeo = new THREE.CylinderGeometry(0.062, 0.072, 0.14, 16);
+    const neckMesh = mkMesh(neckGeo, skinMat);
+    neckMesh.position.y = 0.07;
+    neckBone.add(neckMesh);
+
+    // ── HEAD & REALISTIC FACIAL ANATOMY ──
+    // Cranium / Head Base
+    const headCraniumGeo = new THREE.BoxGeometry(0.21, 0.22, 0.21);
+    headCraniumGeo.translate(0, 0.08, -0.01);
+    headBone.add(mkMesh(headCraniumGeo, skinMat));
+
+    // Sculpted Jawline & Chin
+    const jawGeo = new THREE.BoxGeometry(0.18, 0.09, 0.16);
+    jawGeo.translate(0, -0.01, 0.015);
+    headBone.add(mkMesh(jawGeo, skinMat));
+
+    // Anatomical Front Face Plane (eyes, irises, brows, nose shading, lips)
+    const facePlaneGeo = new THREE.PlaneGeometry(0.19, 0.21);
+    const facePlaneMesh = new THREE.Mesh(facePlaneGeo, faceMat);
+    facePlaneMesh.position.set(0, 0.075, 0.106);
+    headBone.add(facePlaneMesh);
+
+    // 3D Nose Bridge & Tip (gives dimensional profile)
+    const noseGeo = new THREE.ConeGeometry(0.018, 0.055, 4);
+    noseGeo.rotateX(Math.PI / 2);
+    noseGeo.rotateY(Math.PI / 4);
+    const noseMesh = mkMesh(noseGeo, skinMat);
+    noseMesh.position.set(0, 0.072, 0.118);
+    headBone.add(noseMesh);
+
+    // Sculpted Ears
+    const earGeo = new THREE.CylinderGeometry(0.014, 0.010, 0.045, 8);
+    earGeo.rotateZ(Math.PI / 2);
+    earGeo.rotateY(0.2);
+
+    const earL = mkMesh(earGeo, skinMat);
+    earL.position.set(-0.112, 0.075, -0.01);
+    headBone.add(earL);
+
+    const earR = mkMesh(earGeo, skinMat);
+    earR.position.set(0.112, 0.075, -0.01);
+    headBone.add(earR);
+
+    // ── NATURAL STYLED BRUNETTE HAIR (Matching Vance Reference) ──
+    // Top styled volume cap (side-part contour)
+    const hairTopGeo = new THREE.BoxGeometry(0.225, 0.07, 0.225);
+    hairTopGeo.translate(0, 0.19, -0.01);
+    headBone.add(mkMesh(hairTopGeo, hairMat));
+
+    // Forehead hair sweep fringe
+    const hairFringeGeo = new THREE.BoxGeometry(0.21, 0.035, 0.08);
+    hairFringeGeo.rotateX(-0.25);
+    hairFringeGeo.translate(0.01, 0.175, 0.085);
+    headBone.add(mkMesh(hairFringeGeo, hairMat));
+
+    // Sideburns and temples
+    const sideburnGeo = new THREE.BoxGeometry(0.018, 0.12, 0.16);
+    const sideburnL = mkMesh(sideburnGeo, hairMat);
+    sideburnL.position.set(-0.110, 0.11, -0.02);
+    headBone.add(sideburnL);
+
+    const sideburnR = mkMesh(sideburnGeo, hairMat);
+    sideburnR.position.set(0.110, 0.11, -0.02);
+    headBone.add(sideburnR);
+
+    // Back hair fade down to neck
+    const backHairGeo = new THREE.BoxGeometry(0.19, 0.14, 0.03);
+    const backHair = mkMesh(backHairGeo, hairMat);
+    backHair.position.set(0, 0.09, -0.115);
+    headBone.add(backHair);
+
+    // ── ARMS & HANDS ──
+    const armGeo = new THREE.BoxGeometry(0.13, 0.30, 0.13);
     armGeo.translate(0, -0.12, 0);
 
-    const forearmGeo = new THREE.BoxGeometry(0.12, 0.26, 0.12);
-    forearmGeo.translate(0, -0.11, 0);
+    const forearmGeo = new THREE.BoxGeometry(0.12, 0.25, 0.12);
+    forearmGeo.translate(0, -0.10, 0);
 
-    const handGeo = new THREE.BoxGeometry(0.09, 0.1, 0.09);
-    handGeo.translate(0, -0.04, 0);
+    // Suit sleeve wrist cuff
+    const cuffGeo = new THREE.BoxGeometry(0.126, 0.025, 0.126);
+    cuffGeo.translate(0, -0.22, 0);
 
+    // Teal dress shirt cuff peeking from suit sleeve
+    const shirtCuffGeo = new THREE.BoxGeometry(0.118, 0.015, 0.118);
+    shirtCuffGeo.translate(0, -0.235, 0);
+
+    // Anatomical Hands with thumb definition
+    const palmGeo = new THREE.BoxGeometry(0.075, 0.075, 0.04);
+    palmGeo.translate(0, -0.035, 0);
+    const thumbGeo = new THREE.BoxGeometry(0.024, 0.04, 0.024);
+    const fingersGeo = new THREE.BoxGeometry(0.07, 0.05, 0.03);
+    fingersGeo.translate(0, -0.08, 0.005);
+
+    // Left Arm assembly
     const leftArmMesh = mkMesh(armGeo, suitMat);
     leftArmMesh.name = 'CharacterSuitArmL';
     leftArm.add(leftArmMesh);
-    leftForeArm.add(mkMesh(forearmGeo, suitMat));
-    leftHand.add(mkMesh(handGeo, skinMat));
 
+    const leftForeArmMesh = mkMesh(forearmGeo, suitMat);
+    leftForeArmMesh.name = 'CharacterSuitForeArmL';
+    leftForeArm.add(leftForeArmMesh);
+    leftForeArm.add(mkMesh(cuffGeo, suitMat));
+    leftForeArm.add(mkMesh(shirtCuffGeo, shirtMat));
+
+    const leftHandPalm = mkMesh(palmGeo, skinMat);
+    const leftThumb = mkMesh(thumbGeo, skinMat);
+    leftThumb.position.set(0.042, -0.03, 0.01);
+    leftThumb.rotation.z = 0.35;
+    leftHandPalm.add(leftThumb);
+    leftHandPalm.add(mkMesh(fingersGeo, skinMat));
+    leftHand.add(leftHandPalm);
+
+    // Right Arm assembly
     const rightArmMesh = mkMesh(armGeo, suitMat);
     rightArmMesh.name = 'CharacterSuitArmR';
     rightArm.add(rightArmMesh);
-    rightForeArm.add(mkMesh(forearmGeo, suitMat));
-    rightHand.add(mkMesh(handGeo, skinMat));
 
-    // LEGS
-    const legGeo = new THREE.BoxGeometry(0.15, 0.44, 0.15);
-    legGeo.translate(0, -0.2, 0);
+    const rightForeArmMesh = mkMesh(forearmGeo, suitMat);
+    rightForeArmMesh.name = 'CharacterSuitForeArmR';
+    rightForeArm.add(rightForeArmMesh);
+    rightForeArm.add(mkMesh(cuffGeo, suitMat));
+    rightForeArm.add(mkMesh(shirtCuffGeo, shirtMat));
 
-    const shinGeo = new THREE.BoxGeometry(0.14, 0.42, 0.14);
-    shinGeo.translate(0, -0.2, 0);
+    const rightHandPalm = mkMesh(palmGeo, skinMat);
+    const rightThumb = mkMesh(thumbGeo, skinMat);
+    rightThumb.position.set(-0.042, -0.03, 0.01);
+    rightThumb.rotation.z = -0.35;
+    rightHandPalm.add(rightThumb);
+    rightHandPalm.add(mkMesh(fingersGeo, skinMat));
+    rightHand.add(rightHandPalm);
 
-    leftUpLeg.add(mkMesh(legGeo, darkPantsMat));
-    leftLeg.add(mkMesh(shinGeo, darkPantsMat));
-    rightUpLeg.add(mkMesh(legGeo, darkPantsMat));
-    rightLeg.add(mkMesh(shinGeo, darkPantsMat));
+    // ── LEGS & TAILORED TROUSERS ──
+    const thighGeo = new THREE.BoxGeometry(0.145, 0.44, 0.15);
+    thighGeo.translate(0, -0.20, 0);
 
-    // RUNNING SHOES (Upper + Midsole + Tread)
-    const shoeUpperGeo = new THREE.BoxGeometry(0.15, 0.09, 0.22);
-    const shoeMidGeo = new THREE.BoxGeometry(0.16, 0.035, 0.24);
+    const shinGeo = new THREE.BoxGeometry(0.135, 0.42, 0.14);
+    shinGeo.translate(0, -0.19, 0);
+
+    // Trouser hem cuff at ankle
+    const hemGeo = new THREE.BoxGeometry(0.142, 0.03, 0.148);
+    hemGeo.translate(0, -0.38, 0);
+
+    leftUpLeg.add(mkMesh(thighGeo, trousersMat));
+    leftLeg.add(mkMesh(shinGeo, trousersMat));
+    leftLeg.add(mkMesh(hemGeo, trousersMat));
+
+    rightUpLeg.add(mkMesh(thighGeo, trousersMat));
+    rightLeg.add(mkMesh(shinGeo, trousersMat));
+    rightLeg.add(mkMesh(hemGeo, trousersMat));
+
+    // ── OXFORD LEATHER DRESS SHOES ──
+    const shoeUpperGeo = new THREE.BoxGeometry(0.132, 0.075, 0.22);
+    const shoeToeCapGeo = new THREE.BoxGeometry(0.128, 0.055, 0.07);
+    const shoeHeelGeo = new THREE.BoxGeometry(0.125, 0.03, 0.075);
+    const shoeWeltGeo = new THREE.BoxGeometry(0.138, 0.018, 0.235);
 
     [leftFoot, rightFoot].forEach((foot) => {
-      const upper = mkMesh(shoeUpperGeo, suitMat);
-      upper.position.set(0, 0.045, 0.03);
+      // Main shoe upper body
+      const upper = mkMesh(shoeUpperGeo, shoeMat);
+      upper.position.set(0, 0.045, 0.025);
       foot.add(upper);
 
-      const mid = mkMesh(shoeMidGeo, shoeSoleMat);
-      mid.position.set(0, 0.015, 0.03);
-      foot.add(mid);
+      // Toe cap (smooth tapered front)
+      const toeCap = mkMesh(shoeToeCapGeo, shoeMat);
+      toeCap.position.set(0, 0.035, 0.115);
+      foot.add(toeCap);
+
+      // Raised rear heel block
+      const heel = mkMesh(shoeHeelGeo, shoeSoleMat);
+      heel.position.set(0, 0.015, -0.05);
+      foot.add(heel);
+
+      // Outsole welt rim
+      const welt = mkMesh(shoeWeltGeo, shoeSoleMat);
+      welt.position.set(0, 0.009, 0.025);
+      foot.add(welt);
     });
+
 
     // ── 3. Dynamic Skeletal Animation Clips ──
     const animations = this.generateProceduralHumanoidAnimations();

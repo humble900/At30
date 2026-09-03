@@ -3,6 +3,7 @@ import { EXHIBITS } from '../data/exhibits';
 import { ONLINE_MASTERPIECES, type MasterpieceArt } from '../data/artworks';
 import type { ExhibitItem } from '../types';
 import { TextureGenerator } from './TextureGenerator';
+import { visitorStats } from '../services/VisitorStatsService';
 
 export interface BoundingBox2D {
   minX: number;
@@ -355,10 +356,17 @@ export class MuseumScene {
     // Entrance back wall
     this.addWall(doorW + WALL_THICK, WALL_H, WALL_THICK, 0, WALL_H / 2, ATRIUM_HALF + entranceLen);
 
-    // Welcome sign
-    const welcomeTex = TextureGenerator.createWelcomeWallTexture('At30 Pavilion', 'Where Innovation Meets Discovery', '#00F0FF');
+    // Welcome sign with live explorers count
+    const museumPlays = visitorStats.getStats().museumPlays;
+    const welcomeTex = TextureGenerator.createWelcomeWallTexture(
+      'At30 Pavilion',
+      'Where Innovation Meets Discovery',
+      '#00F0FF',
+      `${museumPlays.toLocaleString()} Explorers Played`
+    );
     const welcomeMat = new THREE.MeshBasicMaterial({ map: welcomeTex });
     const welcomeSign = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.25), welcomeMat);
+
     welcomeSign.position.set(0, 2.5, ATRIUM_HALF + entranceLen - 0.3);
     welcomeSign.rotation.y = Math.PI;
     this.scene.add(welcomeSign);

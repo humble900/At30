@@ -23,6 +23,7 @@ import { RemotePlayerRegistry } from './multiplayer/RemotePlayerRegistry';
 import type { MultiplayerConnectionState } from './multiplayer/types';
 import { LegalPage } from './components/LegalPage';
 import { CanopyRunExperience } from './components/CanopyRunExperience';
+import { visitorStats, type PlatformPublicStats } from './services/VisitorStatsService';
 
 interface MuseumExperienceProps {
   visitorName: string;
@@ -43,6 +44,13 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
   const remotePlayersRef = useRef<RemotePlayerRegistry | null>(null);
 
   // Game & Quest State
+  const [stats, setStats] = useState<PlatformPublicStats>(() => visitorStats.getStats());
+  useEffect(() => {
+    void visitorStats.fetchStats().then(setStats);
+    const unsubscribe = visitorStats.subscribe(setStats);
+    return unsubscribe;
+  }, []);
+
   const [discoveredCodes, setDiscoveredCodes] = useState<Record<BrandKey, DiscoveredCoupon | null>>(() => {
     try {
       const saved = localStorage.getItem('at30_discovered_coupons');
@@ -166,6 +174,7 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
 
     // 4. Avatar (with customized name and suit color)
     const avatar = new Avatar(avatarColor, visitorName);
+    avatar.hideNameTag(); // Local player should not see their own name card
     localAvatarRef.current = avatar;
     museumScene.scene.add(avatar.group);
 
@@ -440,7 +449,9 @@ const MuseumExperience: React.FC<MuseumExperienceProps> = ({
         onSendSpeech={handleSendSpeech}
         speechTarget={speechTarget}
         onClearSpeechTarget={() => setSpeechTarget(null)}
+        totalPlayedCount={stats.museumPlays}
       />
+
 
       {/* Exhibit Inspection & Clue Modal */}
       {selectedExhibit && (
@@ -527,7 +538,9 @@ const MuseumApp: React.FC = () => {
     setIsNameModalOpen(false);
     setHasEntered(true);
     telemetry.trackSessionStart(name);
+    void visitorStats.recordGamePlay(selectedExperience === 'canopy' ? 'canopy_run' : 'museum');
   };
+
 
   const handleExitToReception = () => {
     setHasEntered(false);

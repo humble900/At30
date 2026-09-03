@@ -148,32 +148,39 @@ export class RiggedAvatar {
       this.disposeSprite(this.nameSprite);
     }
     this.nameSprite = this.createNameTagSprite(name);
-    this.nameSprite.position.set(0, 2.05, 0);
+    this.nameSprite.position.set(0, 1.95, 0);
     this.group.add(this.nameSprite);
+  }
+
+  /** Hide the name tag entirely (used for the local player). */
+  public hideNameTag() {
+    if (this.nameSprite) {
+      this.nameSprite.visible = false;
+    }
   }
 
   private createNameTagSprite(name: string): THREE.Sprite {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 64;
+    canvas.width = 192;
+    canvas.height = 48;
     const ctx = canvas.getContext('2d')!;
 
-    ctx.fillStyle = 'rgba(15, 17, 23, 0.85)';
+    ctx.fillStyle = 'rgba(15, 17, 23, 0.72)';
     ctx.strokeStyle = this.jacketColor;
-    ctx.lineWidth = 3;
-    ctx.roundRect(8, 8, 240, 48, 14);
+    ctx.lineWidth = 2;
+    ctx.roundRect(4, 4, 184, 40, 10);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.font = 'bold 15px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(name, 128, 40);
+    ctx.fillText(name, 96, 30);
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(1.4, 0.35, 1);
+    sprite.scale.set(0.85, 0.22, 1);
     return sprite;
   }
 

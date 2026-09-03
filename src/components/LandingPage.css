@@ -34,10 +34,21 @@
 .hero-copy > p { max-width: 570px; font-size: 18px; line-height: 1.65; color: #555a53; }
 .hero-next-world { display:block; margin-top:10px; color:#252a24; font-weight:600; }
 .hero-actions { display: flex; align-items: center; gap: 28px; margin-top: 34px; }
+.hero-social-proof { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+.proof-pill { display: inline-flex; align-items: center; gap: 9px; padding: 7px 14px; background: rgba(16,19,16,.05); border: 1px solid rgba(16,19,16,.12); border-radius: 9999px; font-size: 13px; color: #282d27; }
+.proof-pill strong { font-weight: 800; color: #101310; }
+.proof-pill--secondary { background: rgba(16,19,16,.03); border-color: rgba(16,19,16,.08); color: #495047; }
+.live-indicator { position: relative; width: 8px; height: 8px; display: inline-flex; align-items: center; justify-content: center; }
+.live-pulse { position: absolute; inset: -3px; border-radius: 50%; background: #10B981; opacity: .4; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.live-dot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #10B981; }
+@keyframes ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
+
+.nav-stats-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: rgba(16,19,16,.06); border: 1px solid rgba(16,19,16,.14); border-radius: 9999px; font-size: 12px; font-weight: 600; color: #222621; }
 .primary-cta { border: 0; background: var(--acid); color: var(--ink); display: inline-flex; align-items: center; gap: 12px; padding: 7px 16px 7px 7px; font-weight: 800; cursor: pointer; box-shadow: 5px 5px 0 var(--ink); }
 .cta-icon { width: 42px; height: 42px; background: var(--ink); color: #fff; display: grid; place-items: center; }
 .primary-cta:hover { transform: translate(2px,2px); box-shadow: 3px 3px 0 var(--ink); }
 .text-link { display: inline-flex; align-items: center; color: var(--ink); gap: 5px; font-size: 13px; font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 3px; }
+
 
 .hero-visual { min-height: 560px; display: grid; place-items: center; position: relative; }
 .visual-halo { width: min(37vw, 540px); aspect-ratio: 1; background: linear-gradient(145deg,#9fe7ff 0%,#b4a6ff 42%,#fbc9bc 72%,#e7ff7c 100%); border-radius: 50%; filter: blur(1px); position: absolute; }

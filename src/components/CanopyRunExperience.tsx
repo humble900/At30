@@ -169,6 +169,7 @@ export const CanopyRunExperience: React.FC<CanopyRunExperienceProps> = ({
       hasGlasses,
       name: visitorName
     });
+    avatar.riggedAvatar.hideNameTag(); // Local player should not see their own name card
     avatarRef.current = avatar;
     world.scene.add(avatar.group);
 

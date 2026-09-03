@@ -333,7 +333,7 @@ export class TextureGenerator {
     return texture;
   }
 
-  public static createWelcomeWallTexture(brandName: string, tagline: string, color: string): THREE.CanvasTexture {
+  public static createWelcomeWallTexture(brandName: string, tagline: string, color: string, statsBadgeText?: string): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 576;
@@ -355,32 +355,47 @@ export class TextureGenerator {
     ctx.fillStyle = '#FFFFFF';
     ctx.font = '900 64px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(brandName.toUpperCase(), 512, 230);
+    ctx.fillText(brandName.toUpperCase(), 512, 215);
 
     ctx.fillStyle = color;
     ctx.font = '22px Inter, sans-serif';
-    ctx.fillText(tagline, 512, 290);
+    ctx.fillText(tagline, 512, 275);
 
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(300, 330);
-    ctx.lineTo(724, 330);
+    ctx.moveTo(300, 310);
+    ctx.lineTo(724, 310);
     ctx.stroke();
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.font = 'bold 16px Inter, sans-serif';
-    ctx.fillText('CURATED PERMANENT COLLECTION', 512, 380);
+    ctx.fillText('CURATED PERMANENT COLLECTION', 512, 350);
+
+    if (statsBadgeText) {
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
+      ctx.strokeStyle = '#00F0FF';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(312, 385, 400, 48, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#00F0FF';
+      ctx.font = 'bold 18px Inter, sans-serif';
+      ctx.fillText(`● ${statsBadgeText.toUpperCase()}`, 512, 416);
+    }
 
     ctx.fillStyle = color;
     ctx.globalAlpha = 0.8;
     ctx.font = 'bold 16px Inter, sans-serif';
-    ctx.fillText('EXPLORE THE GALLERY ROOMS →', 512, 480);
+    ctx.fillText('EXPLORE THE GALLERY ROOMS →', 512, statsBadgeText ? 485 : 460);
     ctx.globalAlpha = 1;
     ctx.textAlign = 'left';
 
     return new THREE.CanvasTexture(canvas);
   }
+
 
   /** Small info plaque beneath paintings — Enterprise Titanium & Gold Finish */
   public static createGalleryLabelTexture(title: string, artistAndYear: string): THREE.CanvasTexture {
@@ -803,4 +818,361 @@ export class TextureGenerator {
     ctx.textAlign = 'left';
     return new THREE.CanvasTexture(canvas);
   }
+
+  // ─── PROCEDURAL REALISTIC HUMAN & WARDROBE TEXTURES ──────────
+
+  /** Fine woven fabric normal map for wool business suit and dress trousers */
+  public static createFabricNormalMap(): THREE.CanvasTexture {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+    const imgData = ctx.createImageData(size, size);
+    const data = imgData.data;
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        // High-frequency twill / diagonal weave pattern
+        const freq = 0.35;
+        const dx = Math.cos(x * freq + y * freq * 0.5) * freq * 0.4;
+        const dy = -Math.sin(y * freq - x * freq * 0.5) * freq * 0.4;
+
+        // Convert gradient to normal map (Tangent Space: X=R, Y=G, Z=B)
+        const nx = -dx * 2.0;
+        const ny = -dy * 2.0;
+        const nz = 1.0;
+        const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+
+        const idx = (y * size + x) * 4;
+        data[idx] = Math.floor(((nx / len) * 0.5 + 0.5) * 255);
+        data[idx + 1] = Math.floor(((ny / len) * 0.5 + 0.5) * 255);
+        data[idx + 2] = Math.floor(((nz / len) * 0.5 + 0.5) * 255);
+        data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(6, 6);
+    return texture;
+  }
+
+  /** Organic micro-pore normal map for realistic human skin */
+  public static createSkinNormalMap(): THREE.CanvasTexture {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+    const imgData = ctx.createImageData(size, size);
+    const data = imgData.data;
+
+    // Pseudo-random cellular pore distribution
+    const seedPoints: [number, number][] = [];
+    for (let i = 0; i < 90; i++) {
+      seedPoints.push([Math.random() * size, Math.random() * size]);
+    }
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        let minDist = 999;
+        for (let i = 0; i < seedPoints.length; i++) {
+          const dx = x - seedPoints[i][0];
+          const dy = y - seedPoints[i][1];
+          const d = dx * dx + dy * dy;
+          if (d < minDist) minDist = d;
+        }
+        const dist = Math.sqrt(minDist);
+        const pore = Math.sin(dist * 0.6) * Math.exp(-dist * 0.08);
+
+        const nx = (Math.random() - 0.5) * 0.15 + pore * 0.2;
+        const ny = (Math.random() - 0.5) * 0.15 + pore * 0.2;
+        const nz = 1.0;
+        const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+
+        const idx = (y * size + x) * 4;
+        data[idx] = Math.floor(((nx / len) * 0.5 + 0.5) * 255);
+        data[idx + 1] = Math.floor(((ny / len) * 0.5 + 0.5) * 255);
+        data[idx + 2] = Math.floor(((nz / len) * 0.5 + 0.5) * 255);
+        data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 4);
+    return texture;
+  }
+
+  /** Leather crease normal map for dress shoes */
+  public static createLeatherNormalMap(): THREE.CanvasTexture {
+    const size = 128;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+    const imgData = ctx.createImageData(size, size);
+    const data = imgData.data;
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const crease = Math.sin(x * 0.4 + Math.sin(y * 0.3) * 2) * 0.12;
+        const nx = crease;
+        const ny = Math.cos(y * 0.4) * 0.08;
+        const nz = 1.0;
+        const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+
+        const idx = (y * size + x) * 4;
+        data[idx] = Math.floor(((nx / len) * 0.5 + 0.5) * 255);
+        data[idx + 1] = Math.floor(((ny / len) * 0.5 + 0.5) * 255);
+        data[idx + 2] = Math.floor(((nz / len) * 0.5 + 0.5) * 255);
+        data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(3, 3);
+    return texture;
+  }
+
+  /**
+   * Anatomical face diffuse texture matching Curator Vance
+   * Includes defined eyes, irises, specular highlights, eyebrows, nose bridge shading,
+   * natural lips, cheekbone warmth, and subtle 5 o'clock jaw shadow.
+   */
+  public static createCuratorFaceTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+
+    // Base Caucasian / Mediterranean warm skin tone
+    const skinGrad = ctx.createRadialGradient(256, 256, 60, 256, 256, 260);
+    skinGrad.addColorStop(0, '#E8B99D');
+    skinGrad.addColorStop(0.65, '#DC9E7F');
+    skinGrad.addColorStop(1, '#C88566');
+    ctx.fillStyle = skinGrad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Subtle forehead light & cheekbone blush
+    ctx.fillStyle = 'rgba(255, 230, 210, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(256, 120, 110, 55, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cheeks warmth
+    ctx.fillStyle = 'rgba(220, 100, 80, 0.12)';
+    ctx.beginPath();
+    ctx.ellipse(170, 275, 45, 30, 0, 0, Math.PI * 2);
+    ctx.ellipse(342, 275, 45, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Subtle masculine jawline shadow (clean trimmed 5 o'clock shadow)
+    const jawGrad = ctx.createLinearGradient(0, 310, 0, 480);
+    jawGrad.addColorStop(0, 'rgba(60, 50, 45, 0.0)');
+    jawGrad.addColorStop(0.5, 'rgba(70, 60, 55, 0.18)');
+    jawGrad.addColorStop(1, 'rgba(50, 40, 35, 0.28)');
+    ctx.fillStyle = jawGrad;
+    ctx.beginPath();
+    ctx.moveTo(110, 330);
+    ctx.quadraticCurveTo(256, 470, 402, 330);
+    ctx.lineTo(402, 512);
+    ctx.lineTo(110, 512);
+    ctx.closePath();
+    ctx.fill();
+
+    // Nose bridge and nostrils
+    ctx.fillStyle = 'rgba(160, 95, 70, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(246, 210);
+    ctx.lineTo(266, 210);
+    ctx.lineTo(276, 298);
+    ctx.lineTo(236, 298);
+    ctx.closePath();
+    ctx.fill();
+
+    // Nostril wings & shadows
+    ctx.fillStyle = 'rgba(120, 60, 40, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(244, 304, 7, 4, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(268, 304, 7, 4, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nose tip soft highlight
+    ctx.fillStyle = 'rgba(255, 245, 235, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(256, 292, 12, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes rendering helper
+    const drawEye = (cx: number, cy: number, isLeft: boolean) => {
+      // Eye socket depth
+      ctx.fillStyle = 'rgba(140, 85, 65, 0.2)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, 38, 24, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyeballs (sclera with subtle warm ambient tint)
+      ctx.fillStyle = '#F4EFEB';
+      ctx.beginPath();
+      ctx.moveTo(cx - 30, cy);
+      ctx.quadraticCurveTo(cx, cy - 17, cx + 30, cy);
+      ctx.quadraticCurveTo(cx, cy + 15, cx - 30, cy);
+      ctx.closePath();
+      ctx.fill();
+
+      // Iris (warm deep hazel/amber brown matching Vance)
+      const irisGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, 14);
+      irisGrad.addColorStop(0, '#5C381E');
+      irisGrad.addColorStop(0.7, '#3A200E');
+      irisGrad.addColorStop(1, '#201006');
+      ctx.fillStyle = irisGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pupil
+      ctx.fillStyle = '#080604';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Specular light reflection (gives life to the eyes!)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(cx - 3.5, cy - 3.5, 2.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyelids & eyelash border
+      ctx.strokeStyle = '#2B170B';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - 31, cy);
+      ctx.quadraticCurveTo(cx, cy - 18, cx + 31, cy);
+      ctx.stroke();
+
+      // Eyebrows (masculine groomed arch with individual strand texture)
+      ctx.fillStyle = '#2C221C';
+      ctx.beginPath();
+      const browY = cy - 26;
+      if (isLeft) {
+        ctx.moveTo(cx - 34, browY + 6);
+        ctx.quadraticCurveTo(cx, browY - 6, cx + 32, browY + 2);
+        ctx.quadraticCurveTo(cx + 4, browY - 14, cx - 34, browY + 6);
+      } else {
+        ctx.moveTo(cx - 32, browY + 2);
+        ctx.quadraticCurveTo(cx, browY - 6, cx + 34, browY + 6);
+        ctx.quadraticCurveTo(cx - 4, browY - 14, cx - 32, browY + 2);
+      }
+      ctx.fill();
+    };
+
+    drawEye(182, 218, true);
+    drawEye(330, 218, false);
+
+    // Natural smile lines (nasolabial folds)
+    ctx.strokeStyle = 'rgba(150, 90, 65, 0.18)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(234, 290);
+    ctx.quadraticCurveTo(210, 335, 216, 368);
+    ctx.moveTo(278, 290);
+    ctx.quadraticCurveTo(302, 335, 296, 368);
+    ctx.stroke();
+
+    // Lips (natural healthy tone with subtle cupid's bow and lower lip fullness)
+    const lipGrad = ctx.createLinearGradient(0, 350, 0, 385);
+    lipGrad.addColorStop(0, '#B86A5E');
+    lipGrad.addColorStop(0.5, '#A85A4E');
+    lipGrad.addColorStop(1, '#8C4339');
+    ctx.fillStyle = lipGrad;
+
+    // Upper lip
+    ctx.beginPath();
+    ctx.moveTo(226, 362);
+    ctx.quadraticCurveTo(244, 356, 256, 359);
+    ctx.quadraticCurveTo(268, 356, 286, 362);
+    ctx.quadraticCurveTo(256, 367, 226, 362);
+    ctx.fill();
+
+    // Lower lip
+    ctx.beginPath();
+    ctx.moveTo(228, 364);
+    ctx.quadraticCurveTo(256, 367, 284, 364);
+    ctx.quadraticCurveTo(256, 384, 228, 364);
+    ctx.fill();
+
+    // Center mouth seam line
+    ctx.strokeStyle = '#4A1D16';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(224, 363);
+    ctx.lineTo(288, 363);
+    ctx.stroke();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
+  }
+
+  /**
+   * High-definition "AT30 / Curator Vance" metallic pocket name badge
+   * Features brushed titanium background, AT30 logo glyph, and executive typography.
+   */
+  public static createCuratorBadgeTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 96;
+    const ctx = canvas.getContext('2d')!;
+
+    // Brushed metal finish
+    const metalGrad = ctx.createLinearGradient(0, 0, 256, 96);
+    metalGrad.addColorStop(0, '#D1D5DB');
+    metalGrad.addColorStop(0.3, '#E5E7EB');
+    metalGrad.addColorStop(0.7, '#9CA3AF');
+    metalGrad.addColorStop(1, '#6B7280');
+    ctx.fillStyle = metalGrad;
+    ctx.roundRect(4, 4, 248, 88, 10);
+    ctx.fill();
+
+    // Metal chamfer border
+    ctx.strokeStyle = '#F3F4F6';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Dark inset inner plate
+    ctx.fillStyle = '#111827';
+    ctx.roundRect(10, 10, 236, 76, 6);
+    ctx.fill();
+
+    // AT30 Cyan Logo Icon
+    ctx.fillStyle = '#00F0FF';
+    ctx.font = 'bold 24px Inter, sans-serif';
+    ctx.fillText('AT30', 22, 42);
+
+    // Curator Vance text
+    ctx.fillStyle = '#F9FAFB';
+    ctx.font = 'bold 19px Inter, sans-serif';
+    ctx.fillText('CURATOR VANCE', 88, 40);
+
+    ctx.fillStyle = '#9CA3AF';
+    ctx.font = '600 12px Inter, sans-serif';
+    ctx.fillText('MUSEUM DIRECTOR', 88, 62);
+
+    // Cyan status indicator dot
+    ctx.fillStyle = '#10B981';
+    ctx.beginPath();
+    ctx.arc(224, 36, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    return new THREE.CanvasTexture(canvas);
+  }
 }
+

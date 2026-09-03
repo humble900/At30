@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowRight,
   BarChart3,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import heroImage from '../assets/hero.png';
 import touchGrassImage from '../assets/touch-grass-preview.webp';
+import { visitorStats, type PlatformPublicStats } from '../services/VisitorStatsService';
 import './LandingPage.css';
 
 type LandingPageProps = {
@@ -23,6 +24,7 @@ type LandingPageProps = {
   onEnterCanopy: () => void;
   onRequestCustomize: () => void;
 };
+
 
 const partners = ['PosterBooking', 'ClayRent', 'LeadMagic', 'AT30 Labs'];
 
@@ -68,6 +70,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onEnterCanopy,
   onRequestCustomize
 }) => {
+  const [stats, setStats] = useState<PlatformPublicStats>(() => visitorStats.getStats());
+
+  useEffect(() => {
+    void visitorStats.recordSiteVisit().then(setStats);
+    const unsubscribe = visitorStats.subscribe(setStats);
+    return unsubscribe;
+  }, []);
+
   return (
     <main className="landing-shell">
       <nav className="landing-nav" aria-label="Primary navigation">
@@ -82,6 +92,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
         
         <div className="flex items-center gap-2.5">
+          <div className="nav-stats-chip hidden md:inline-flex" title="Total public visitors who have explored the AT30 platform">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span><strong>{stats.totalVisitors.toLocaleString()}</strong> visitors</span>
+          </div>
+
           {savedName && (
             <button
               onClick={onRequestCustomize}
@@ -108,6 +123,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Some worlds stay for a season. Others grow into something bigger.
             <span className="hero-next-world">Start with the AT30 Digital Museum. The next world could take you anywhere.</span>
           </p>
+
+          <div className="hero-social-proof" aria-label="Live platform statistics">
+            <div className="proof-pill">
+              <span className="live-indicator">
+                <span className="live-pulse" />
+                <span className="live-dot" />
+              </span>
+              <Globe2 size={15} className="text-cyan-600" />
+              <span><strong>{stats.totalVisitors.toLocaleString()}</strong> people have visited AT30</span>
+            </div>
+            <div className="proof-pill proof-pill--secondary">
+              <Gamepad2 size={15} className="text-emerald-600" />
+              <span><strong>{stats.totalGamePlays.toLocaleString()}</strong> games played</span>
+            </div>
+          </div>
+
           <div className="hero-actions">
             <button className="primary-cta cursor-pointer" onClick={onEnter}>
               <span className="cta-icon"><Gamepad2 size={19} /></span>
@@ -154,8 +185,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="world-type"><Compass size={16}/><span>Explore · Inspect · Discover</span></div>
               <h3>AT30 Digital Museum</h3>
               <p>Walk through three galleries, uncover the stories behind each exhibit, follow the clues, and collect the rewards hidden inside.</p>
-              <div className="world-facts"><span>3 galleries</span><span>6 exhibits</span><span>Shared world</span></div>
+              <div className="world-facts"><span>3 galleries</span><span>6 exhibits</span><span>{stats.museumPlays.toLocaleString()} explorers played</span></div>
               <button className="world-enter cursor-pointer" onClick={onEnter}>Enter the museum <ArrowRight size={18}/></button>
+
             </div>
           </article>
 
