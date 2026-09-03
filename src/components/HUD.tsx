@@ -86,6 +86,11 @@ export const HUD: React.FC<HUDProps> = ({
               <span className="proximity-action__key"><kbd>E</kbd><Eye size={15}/></span>
               <span className="proximity-action__label"><small>Visitor guide</small><strong>Open book</strong></span>
             </button>
+          ) : nearbyInfoPoint.kind === 'artifact' ? (
+            <div className="interaction-card artifact-card" style={{ borderColor: '#00F0FF' }}>
+              <div><small>RECEPTION ARTIFACT</small><strong>{nearbyInfoPoint.title}</strong></div>
+              <button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button>
+            </div>
           ) : (
             <div className="interaction-card partnership-card"><div><small>PARTNERSHIPS</small><strong>{nearbyInfoPoint.title}</strong></div><button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
           )

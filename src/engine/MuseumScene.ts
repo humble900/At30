@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { EXHIBITS } from '../data/exhibits';
 import { ONLINE_MASTERPIECES, type MasterpieceArt } from '../data/artworks';
 import type { ExhibitItem } from '../types';
@@ -19,8 +20,8 @@ export interface ArtworkPlacement {
 }
 
 export interface MuseumInfoPoint {
-  id: 'visitor-guide' | 'advertise';
-  kind: 'guide' | 'partnership';
+  id: 'visitor-guide' | 'advertise' | 'reception-artifact';
+  kind: 'guide' | 'partnership' | 'artifact';
   title: string;
   position: [number, number];
 }
@@ -81,6 +82,7 @@ export class MuseumScene {
     this.buildWestWing();  // LeadMagic
     this.buildSouthEntrance();
     this.buildReceptionGuide();
+    this.buildReceptionArtifact();
     this.buildExhibits();
   }
 
@@ -470,6 +472,154 @@ export class MuseumScene {
       glowMaterial.opacity = 0.16 + Math.sin(time * 1.65) * 0.055;
       locatorLight.intensity = 1.15 + Math.sin(time * 1.65) * 0.3;
     } });
+  }
+
+  private buildReceptionArtifact() {
+    const group = new THREE.Group();
+    const posX = 2.4;
+    const posZ = 6.6;
+    group.position.set(posX, 0, posZ);
+
+    // 1. Sleek exhibition pedestal
+    const pedestalMat = new THREE.MeshStandardMaterial({
+      color: 0x151821,
+      metalness: 0.7,
+      roughness: 0.28
+    });
+    const pedestal = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.65, 0.78, 1.05, 32),
+      pedestalMat
+    );
+    pedestal.position.y = 1.05 / 2;
+    pedestal.castShadow = true;
+    pedestal.receiveShadow = true;
+    group.add(pedestal);
+
+    // 2. Base & Top Trim Rings
+    const trimMat = new THREE.MeshStandardMaterial({
+      color: 0xD4AF37,
+      metalness: 0.85,
+      roughness: 0.25
+    });
+    const baseTrim = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.82, 0.86, 0.08, 32),
+      trimMat
+    );
+    baseTrim.position.y = 0.04;
+    group.add(baseTrim);
+
+    const topTrim = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.68, 0.68, 0.05, 32),
+      trimMat
+    );
+    topTrim.position.y = 1.05;
+    group.add(topTrim);
+
+    // Glowing cyan accent ring around the top rim
+    const rimGlowMat = new THREE.MeshBasicMaterial({ color: 0x00F0FF });
+    const rimGlow = new THREE.Mesh(new THREE.TorusGeometry(0.69, 0.015, 16, 64), rimGlowMat);
+    rimGlow.rotation.x = Math.PI / 2;
+    rimGlow.position.y = 1.06;
+    group.add(rimGlow);
+
+    // 3. Ground interactive pulse ring
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x00F0FF,
+      transparent: true,
+      opacity: 0.45,
+      side: THREE.DoubleSide
+    });
+    const ringMesh = new THREE.Mesh(new THREE.RingGeometry(1.25, 1.45, 32), ringMat);
+    ringMesh.rotation.x = -Math.PI / 2;
+    ringMesh.position.y = 0.025;
+    group.add(ringMesh);
+
+    // 4. Plaque on front facing south towards arriving visitors
+    const labelTex = TextureGenerator.createGalleryLabelTexture('RECEPTION ARTIFACT', 'COMMUNITY ARCHIVAL SCULPTURE');
+    const label = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.85, 0.24),
+      new THREE.MeshBasicMaterial({ map: labelTex })
+    );
+    label.position.set(0, 0.82, 0.72);
+    label.rotation.x = -0.15;
+    group.add(label);
+
+    // 5. Gallery Spotlight & Ambient point light
+    const spot = new THREE.SpotLight(0xE8F4FF, 3.2, 7, Math.PI / 5, 0.45, 1.2);
+    spot.position.set(0, 4.2, 0);
+    spot.target = pedestal;
+    spot.castShadow = true;
+    group.add(spot);
+
+    const pointLight = new THREE.PointLight(0x00F0FF, 0.9, 3.5);
+    pointLight.position.set(0, 1.4, 0);
+    group.add(pointLight);
+
+    // 6. Collision Box around pedestal
+    this.collisionBoxes.push({
+      minX: posX - 0.75,
+      maxX: posX + 0.75,
+      minZ: posZ - 0.75,
+      maxZ: posZ + 0.75,
+      topY: 1.1
+    });
+
+    // 7. Register Museum Info Point for proximity inspect
+    this.infoPoints.push({
+      id: 'reception-artifact',
+      kind: 'artifact',
+      title: 'Reception Archival Artifact',
+      position: [posX, posZ]
+    });
+
+    // 8. Load the 3D GLB model
+    const loader = new GLTFLoader();
+    loader.load(
+      '/models/reception_artifact.glb',
+      (gltf) => {
+        const model = gltf.scene;
+
+        // Compute bounds and normalize scale
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetScale = 0.75 / (maxDim || 1);
+
+        model.scale.setScalar(targetScale);
+        model.position.set(
+          -center.x * targetScale,
+          -center.y * targetScale + 1.45,
+          -center.z * targetScale
+        );
+
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        group.add(model);
+
+        const baseY = model.position.y;
+        this.animatedObjects.push({
+          mesh: model,
+          update: (time: number) => {
+            model.rotation.y = time * 0.45;
+            model.position.y = baseY + Math.sin(time * 1.8) * 0.025;
+            ringMesh.scale.setScalar(1 + Math.sin(time * 3) * 0.05);
+            ringMat.opacity = 0.35 + Math.sin(time * 2.5) * 0.15;
+          }
+        });
+      },
+      undefined,
+      (err) => {
+        console.warn('Unable to load reception artifact GLB:', err);
+      }
+    );
+
+    this.scene.add(group);
   }
 
   // ─── ATRIUM (Central Hub) ─────────────────────────────────────
