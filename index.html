@@ -4,77 +4,221 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="canonical" href="https://at30.io/" />
+    <link rel="canonical" href="https://any30.com/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
-    <meta name="theme-color" content="#101310" />
-    <meta name="color-scheme" content="dark light" />
-    <meta name="application-name" content="AT30" />
-    <meta name="author" content="AT30" />
+    <meta name="theme-color" content="#f4f4ed" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content="Any30" />
+    <meta name="author" content="Any30" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="description" content="Play seasonal multiplayer events and games on AT30, or create a hosted experience for your company. Enter the Digital Museum—Experience 001." />
+    <meta name="description" content="Any30 is the playable Museum of Gifts. Explore 3D multiplayer galleries in your browser, solve clues, and unlock real brand rewards and gifts. Free to play." />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="AT30" />
+    <meta property="og:site_name" content="Any30 Museum of Gifts" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://at30.io/" />
-    <meta property="og:title" content="AT30 — Seasonal Multiplayer Events & Games" />
-    <meta property="og:description" content="Enter seasonal multiplayer worlds, games, and hosted company experiences. Play the AT30 Digital Museum—Experience 001." />
-    <meta property="og:image" content="https://at30.io/og-image.png" />
-    <meta property="og:image:secure_url" content="https://at30.io/og-image.png" />
+    <meta property="og:url" content="https://any30.com/" />
+    <meta property="og:title" content="Any30 — The Playable Museum of Gifts | Explore Worlds, Find Gifts" />
+    <meta property="og:description" content="Explore 3D multiplayer galleries directly in your browser. Inspect interactive exhibits, solve hidden clues, and discover real brand gifts. Free to enter." />
+    <meta property="og:image" content="https://any30.com/og-image.png" />
+    <meta property="og:image:secure_url" content="https://any30.com/og-image.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Visitors exploring the modern AT30 Digital Museum atrium" />
+    <meta property="og:image:alt" content="Visitors exploring the Any30 Museum of Gifts" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="AT30 — Seasonal Multiplayer Events & Games" />
-    <meta name="twitter:description" content="Play seasonal multiplayer worlds or host an interactive company experience. Experience 001 is live now." />
-    <meta name="twitter:image" content="https://at30.io/og-image.png" />
-    <meta name="twitter:image:alt" content="Visitors exploring the modern AT30 Digital Museum atrium" />
-    <title>AT30 | Seasonal Multiplayer Events, Games & Brand Worlds</title>
+    <meta name="twitter:title" content="Any30 — The Playable Museum of Gifts | Explore Worlds, Find Gifts" />
+    <meta name="twitter:description" content="Explore 3D multiplayer galleries directly in your browser. Inspect interactive exhibits, solve hidden clues, and discover real brand gifts. Free to enter." />
+    <meta name="twitter:image" content="https://any30.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Visitors exploring the Any30 Museum of Gifts" />
+    <meta name="keywords" content="Any30, digital museum, playable museum of gifts, 3D browser games, metaverse experiences, brand gift hunt, multiplayer webgl, virtual exhibits, fine art gallery, interactive advertising" />
+    <meta name="rating" content="General" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <link rel="alternate" type="text/plain" href="https://any30.com/llms.txt" title="LLM Context Documentation" />
+    <title>Any30 — The Playable Museum of Gifts | Explore Worlds, Find Gifts</title>
+
+    <!-- Preconnect & asynchronous font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" />
+
+    <style>
+      html, body {
+        background-color: #f4f4ed;
+        color: #101310;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+      }
+      #root {
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
+      }
+      .at30-boot-skeleton {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: #f4f4ed;
+        color: #101310;
+        font-family: 'Manrope', system-ui, sans-serif;
+      }
+      .at30-boot-mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+      .at30-boot-glyph {
+        width: 32px;
+        height: 32px;
+        display: grid;
+        place-items: center;
+        background: #101310;
+        transform: rotate(12deg);
+      }
+      .at30-boot-glyph span {
+        width: 10px;
+        height: 10px;
+        border: 2px solid #d9ff43;
+      }
+      .at30-boot-line {
+        width: 96px;
+        height: 3px;
+        background: rgba(16, 19, 16, 0.1);
+        border-radius: 9999px;
+        overflow: hidden;
+        position: relative;
+      }
+      .at30-boot-line::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #101310;
+        transform: translateX(-100%);
+        animation: at30-shimmer 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      @keyframes at30-shimmer {
+        0% { transform: translateX(-100%); }
+        50% { transform: translateX(0); }
+        100% { transform: translateX(100%); }
+      }
+    </style>
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
             "@type": "Organization",
-            "@id": "https://at30.io/#organization",
-            "name": "AT30",
-            "url": "https://at30.io/",
-            "logo": "https://at30.io/favicon.svg",
+            "@id": "https://any30.com/#organization",
+            "name": "Any30",
+            "url": "https://any30.com/",
+            "logo": "https://any30.com/favicon.svg",
             "contactPoint": { "@type": "ContactPoint", "telephone": "+1-409-422-9714", "contactType": "partnerships", "availableLanguage": "English" }
           },
           {
             "@type": "WebSite",
-            "@id": "https://at30.io/#website",
-            "url": "https://at30.io/",
-            "name": "AT30",
+            "@id": "https://any30.com/#website",
+            "url": "https://any30.com/",
+            "name": "Any30",
             "description": "A browser-based platform for seasonal multiplayer events, games, and hosted company experiences.",
-            "publisher": { "@id": "https://at30.io/#organization" },
+            "publisher": { "@id": "https://any30.com/#organization" },
             "inLanguage": "en"
           },
           {
             "@type": "VideoGame",
-            "@id": "https://at30.io/#experience",
-            "name": "AT30 Digital Museum — Experience 001",
-            "url": "https://at30.io/",
-            "description": "The first live AT30 experience: explore a multiplayer digital museum, inspect exhibits, solve clues, and collect rewards in a web browser.",
+            "@id": "https://any30.com/#experience",
+            "name": "Any30 Digital Museum — Experience 001",
+            "url": "https://any30.com/",
+            "description": "The first live Any30 experience: explore a multiplayer digital museum, inspect exhibits, solve clues, and collect rewards in a web browser.",
             "gamePlatform": ["Web browser", "Mobile web", "Desktop web"],
             "playMode": "MultiPlayer",
             "applicationCategory": "GameApplication",
             "operatingSystem": "Any modern web browser",
             "isAccessibleForFree": true,
             "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-            "author": { "@id": "https://at30.io/#organization" },
-            "image": "https://at30.io/og-image.png"
+            "author": { "@id": "https://any30.com/#organization" },
+            "image": "https://any30.com/og-image.png"
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://any30.com/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is Any30?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Any30 is a browser-based platform hosting seasonal multiplayer events, virtual worlds, and gamified brand experiences. Experience 001 is the Any30 Digital Museum."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do rewards and gifts work in Any30?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "As you explore the museum halls, inspect 3D interactive exhibits and solve clues to unlock verified partner discount codes and gift vouchers stored directly in your in-game passport."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can my company or brand sponsor a gift or book an ad in Any30?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! Brands and projects can sponsor a hidden gift or book 3D digital signage on the dedicated /partners page at https://any30.com/partners or via WhatsApp at +1 409 422 9714."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is Any30 free to play?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, Any30 is 100% free to enter with no app download, wallet connection, or payment required."
+                }
+              }
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://any30.com/#breadcrumbs",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://any30.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Partners & Ad Spaces",
+                "item": "https://any30.com/partners"
+              }
+            ]
           }
         ]
       }
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="at30-boot-skeleton" aria-label="Loading Any30">
+        <div class="at30-boot-mark">
+          <span class="at30-boot-glyph"><span></span></span>
+          <span>Any30</span>
+        </div>
+        <div class="at30-boot-line"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

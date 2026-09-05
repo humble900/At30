@@ -28,13 +28,13 @@ export const PassportModal: React.FC<PassportModalProps> = ({
     roomHint: string;
   }[] = [
     {
-      key: 'posterbooking',
-      name: 'PosterBooking',
+      key: 'ripplepos',
+      name: 'RipplePOS',
       wing: 'Digital Canvas Wing (East)',
       color: '#0066FF',
-      codeDefault: 'POSTERBOOKING30',
-      perkDefault: '30% Off All Annual Pro Screens + 3 Free Screens Forever',
-      redeemUrl: 'https://posterbooking.com/?utm_source=at30_metaverse&utm_campaign=quest',
+      codeDefault: 'RIPPLEPOS30',
+      perkDefault: '30% Off Hardware Terminals + 3 Months Free Cloud POS',
+      redeemUrl: 'https://ripplepos.com/?utm_source=any30_metaverse&utm_campaign=quest',
       roomHint: 'Explore through the East Wing Lobby & Gallery to the Inner Sanctum 8K Canvas.'
     },
     {
@@ -44,18 +44,18 @@ export const PassportModal: React.FC<PassportModalProps> = ({
       color: '#E06D53',
       codeDefault: 'CLAYRENT2026',
       perkDefault: '$100 Credit Towards Your First Luxury Rental Booking',
-      redeemUrl: 'https://clayrent.com/?utm_source=at30_metaverse&utm_campaign=quest',
+      redeemUrl: 'https://clayrent.com/?utm_source=any30_metaverse&utm_campaign=quest',
       roomHint: 'Explore through the North Wing Hallways to the Architectural Blueprint Sanctum.'
     },
     {
-      key: 'leadmagic',
-      name: 'LeadMagic',
-      wing: 'AI Intelligence Vault (West)',
+      key: 'filedcrews',
+      name: 'FiledCrews',
+      wing: 'Field Operations Vault (West)',
       color: '#A855F7',
-      codeDefault: 'LEADMAGICVIP',
-      perkDefault: '5,000 Free B2B Lead Enrichment Credits + 20% Off Growth Plan',
-      redeemUrl: 'https://leadmagic.io/?utm_source=at30_metaverse&utm_campaign=quest',
-      roomHint: 'Explore through the West Wing Corridors to the AI Data Crystal Sanctum.'
+      codeDefault: 'FILEDCREWS30',
+      perkDefault: '30% Off Annual Crew Management Plan + 30 Days Free Trial',
+      redeemUrl: 'https://filedcrews.com/?utm_source=any30_metaverse&utm_campaign=quest',
+      roomHint: 'Explore through the West Wing Corridors to the Field Operations Command Sanctum.'
     }
   ];
 
@@ -76,7 +76,7 @@ export const PassportModal: React.FC<PassportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/20 bg-[#0E121E]/95 shadow-2xl text-white">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/15 bg-[#0A0D14]/95 shadow-2xl text-white">
         
         {/* Header */}
         <div className="p-6 border-b border-white/10 bg-gradient-to-r from-[#141A29] via-[#1A2338] to-[#121624] flex items-center justify-between">

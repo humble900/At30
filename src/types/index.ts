@@ -1,4 +1,4 @@
-export type BrandKey = 'posterbooking' | 'clayrent' | 'leadmagic';
+export type BrandKey = 'ripplepos' | 'clayrent' | 'filedcrews';
 
 export interface ExhibitItem {
   id: string;
@@ -6,7 +6,7 @@ export interface ExhibitItem {
   brandName: string;
   brandTagline: string;
   title: string;
-  wing: 'Digital Canvas Wing' | 'Modern Habitat Pavilion' | 'AI Intelligence Vault';
+  wing: 'Digital Canvas Wing' | 'Modern Habitat Pavilion' | 'Field Operations Vault' | 'AI Intelligence Vault';
   position: [number, number, number]; // x, y, z
   rotationY: number; // in radians
   type: 'screen' | 'painting' | 'pedestal' | 'kiosk' | 'crystal';

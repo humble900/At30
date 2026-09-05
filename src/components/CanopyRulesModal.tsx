@@ -14,7 +14,7 @@ export const CanopyRulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
             <BookOpen size={24} className="gold-trophy" />
             <div>
               <h2>Official Competition Rules</h2>
-              <p>Touch Grass: Canopy Run — Season 1 (Sponsored by LeadMagic)</p>
+              <p>Touch Grass: Canopy Run — Season 1 (Sponsored by FiledCrews)</p>
             </div>
           </div>
           <button className="canopy-close-btn" onClick={onClose} aria-label="Close">
@@ -25,7 +25,7 @@ export const CanopyRulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
         <div className="canopy-rules-content">
           <section className="rules-section">
             <h3>1. Prize Ladder & Allocation</h3>
-            <p>Total Prize Pool: <strong>$2,000 in LeadMagic Credit</strong>.</p>
+            <p>Total Prize Pool: <strong>$2,000 in FiledCrews Credit</strong>.</p>
             <div className="rules-prize-grid">
               <div className="rules-prize-card">
                 <span className="badge">1st Place</span>
@@ -50,18 +50,18 @@ export const CanopyRulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
             <ul>
               <li><Check size={16} /> Open to all individuals age 18 or older.</li>
               <li><Check size={16} /> Free to enter in Practice, Prize Race, or Free Play mode. No purchase necessary.</li>
-              <li><Check size={16} /> Maximum of one prize per person and per verified LeadMagic account.</li>
-              <li><Check size={16} /> A LeadMagic account is not required to race, but is required for offline claim approval.</li>
+              <li><Check size={16} /> Maximum of one prize per person and per verified FiledCrews account.</li>
+              <li><Check size={16} /> A FiledCrews account is not required to race, but is required for offline claim approval.</li>
             </ul>
           </section>
 
           <section className="rules-section">
             <h3>3. Provisional Claims & Offline Review Workflow</h3>
             <p>
-              When a participant achieves a provisional prize position and submits their LeadMagic email, the prize tier enters <code>pending_review</code> status.
+              When a participant achieves a provisional prize position and submits their FiledCrews email, the prize tier enters <code>pending_review</code> status.
             </p>
             <p>
-              LeadMagic verifies each submitted email account offline. An AT30 Administrator then officially approves or rejects the claim. In the event of a disqualification or unverified claim, the next earliest eligible runner on the waitlist is promoted.
+              FiledCrews verifies each submitted email account offline. An Any30 Administrator then officially approves or rejects the claim. In the event of a disqualification or unverified claim, the next earliest eligible runner on the waitlist is promoted.
             </p>
           </section>
 

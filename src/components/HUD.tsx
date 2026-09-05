@@ -52,11 +52,11 @@ export const HUD: React.FC<HUDProps> = ({
       <header className="museum-toolbar">
         <div className="museum-identity">
           <span className="museum-avatar" style={{ backgroundColor: avatarColor }}>{visitorName.charAt(0).toUpperCase()}</span>
-          <div><strong>AT30 Museum</strong><small>{visitorName}</small></div>
+          <div><strong>Any30 Museum</strong><small>{visitorName}</small></div>
         </div>
         <div className="museum-objective"><small>CURRENT OBJECTIVE</small><strong>{totalUnlocked === 3 ? 'Collection complete' : `Find ${3 - totalUnlocked} remaining reward${3 - totalUnlocked === 1 ? '' : 's'}`}</strong></div>
         <div className="museum-actions">
-          <span className="played-count-badge" title="Total visitors who have played the AT30 Digital Museum">
+          <span className="played-count-badge" title="Total visitors who have played the Any30 Digital Museum">
             <Gamepad2 size={15} />
             <span><strong>{(totalPlayedCount ?? 10).toLocaleString()}</strong> played</span>
           </span>
@@ -74,28 +74,37 @@ export const HUD: React.FC<HUDProps> = ({
 
       <div className="museum-context">
         {nearbyExhibit ? (
-          <div className="interaction-card" style={{ borderColor: nearbyExhibit.themeColor }}>
-            <div><small>{nearbyExhibit.wing}</small><strong>{nearbyExhibit.title}</strong></div>
-            <button onClick={() => onInspectExhibit(nearbyExhibit)}><Eye size={17} /> Inspect <kbd>E</kbd></button>
+          <div className="interaction-card interaction-pill" style={{ borderColor: nearbyExhibit.themeColor }}>
+            <button onClick={() => onInspectExhibit(nearbyExhibit)} aria-label="Inspect exhibit">
+              <Eye size={17} /> Inspect <kbd>E</kbd>
+            </button>
           </div>
         ) : nearbyArtwork ? (
-          <div className="interaction-card artwork-card"><div><small>FROM THE COLLECTION</small><strong>{nearbyArtwork.title}</strong></div><button onClick={() => onInspectArtwork(nearbyArtwork)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
+          <div className="interaction-card interaction-pill artwork-card">
+            <button onClick={() => onInspectArtwork(nearbyArtwork)} aria-label="Inspect artwork">
+              <Eye size={17} /> Inspect <kbd>E</kbd>
+            </button>
+          </div>
         ) : nearbyInfoPoint ? (
           nearbyInfoPoint.kind === 'guide' ? (
-            <button className="proximity-action" onClick={() => onInspectInfoPoint(nearbyInfoPoint)} aria-label="Open visitor guide">
-              <span className="proximity-action__key"><kbd>E</kbd><Eye size={15}/></span>
-              <span className="proximity-action__label"><small>Visitor guide</small><strong>Open book</strong></span>
-            </button>
-          ) : nearbyInfoPoint.kind === 'artifact' ? (
-            <div className="interaction-card artifact-card" style={{ borderColor: '#00F0FF' }}>
-              <div><small>RECEPTION ARTIFACT</small><strong>{nearbyInfoPoint.title}</strong></div>
-              <button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button>
+            <div className="interaction-card interaction-pill guide-pill">
+              <button onClick={() => onInspectInfoPoint(nearbyInfoPoint)} aria-label="Open visitor guide">
+                <Eye size={17} /> Inspect <kbd>E</kbd>
+              </button>
             </div>
           ) : (
-            <div className="interaction-card partnership-card"><div><small>PARTNERSHIPS</small><strong>{nearbyInfoPoint.title}</strong></div><button onClick={() => onInspectInfoPoint(nearbyInfoPoint)}><Eye size={17}/> Inspect <kbd>E</kbd></button></div>
+            <div className="interaction-card interaction-pill partnership-card" style={nearbyInfoPoint.kind === 'artifact' ? { borderColor: '#00F0FF' } : undefined}>
+              <button onClick={() => onInspectInfoPoint(nearbyInfoPoint)} aria-label="Inspect info point">
+                <Eye size={17} /> Inspect <kbd>E</kbd>
+              </button>
+            </div>
           )
         ) : isNearExit ? (
-          <div className="interaction-card exit-card"><div><small>SOUTH ENTRANCE</small><strong>Return to landing page</strong></div><button onClick={onOpenExit}><LogOut size={17} /> Exit</button></div>
+          <div className="interaction-card interaction-pill exit-card">
+            <button onClick={onOpenExit} aria-label="Exit museum">
+              <LogOut size={17} /> Exit <kbd>E</kbd>
+            </button>
+          </div>
         ) : null}
       </div>
 

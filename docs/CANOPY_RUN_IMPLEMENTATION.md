@@ -5,7 +5,7 @@
 Status: approved product direction, ready for implementation planning  
 Experience: AT30 Experience 002  
 Mode: browser-based 3D forest obstacle course with a limited prize season and permanent free play  
-Prize partner: LeadMagic  
+Prize partner: FiledCrews  
 
 ## 1. Product definition
 
@@ -32,32 +32,32 @@ It must feel like a premium animated adventure for adults, rather than a block g
 | Prize Race | Everyone | Compete during an active prize season | First three eligible, reviewed claims only |
 | Free Play | Everyone | Race, improve a time, challenge friends | No |
 
-Everyone can enter every mode. A LeadMagic account is not required to race or appear on a leaderboard. It is only required for a submitted prize claim to be approved offline by LeadMagic.
+Everyone can enter every mode. A FiledCrews account is not required to race or appear on a leaderboard. It is only required for a submitted prize claim to be approved offline by FiledCrews.
 
 ## 2. Prize season rules
 
 ### Prize ladder
 
-| Provisional place | LeadMagic credit |
+| Provisional place | FiledCrews credit |
 |---|---:|
 | First | $1,000 |
 | Second | $700 |
 | Third | $300 |
 
-Total prize value: $2,000 LeadMagic credit.
+Total prize value: $2,000 FiledCrews credit.
 
 ### Prize allocation model
 
-Prize slots are assigned to valid finishers in chronological finish order. A result is **not a final prize win** until its email is reviewed offline by LeadMagic and approved by an AT30 administrator.
+Prize slots are assigned to valid finishers in chronological finish order. A result is **not a final prize win** until its email is reviewed offline by FiledCrews and approved by an AT30 administrator.
 
 1. A player crosses the finish line.
 2. The competition service validates the run.
 3. The player taps **Open your finish card**.
 4. If a prize slot remains, the player sees the current provisional prize amount.
-5. The player enters the email used with LeadMagic and submits the claim.
-6. The slot becomes `pending LeadMagic review` and the next available finish card advances to the next prize tier.
-7. AT30 sends the pending-claim report to LeadMagic offline.
-8. LeadMagic confirms whether each email belongs to an eligible LeadMagic user.
+5. The player enters the email used with FiledCrews and submits the claim.
+6. The slot becomes `pending FiledCrews review` and the next available finish card advances to the next prize tier.
+7. AT30 sends the pending-claim report to FiledCrews offline.
+8. FiledCrews confirms whether each email belongs to an eligible FiledCrews user.
 9. AT30 approves or rejects the claim in the admin portal.
 
 ### Finish card copy
@@ -65,13 +65,13 @@ Prize slots are assigned to valid finishers in chronological finish order. A res
 Before email submission:
 
 > You reached a prize position.  
-> **$1,000 LeadMagic credit**  
-> Enter the email you use with LeadMagic to submit your prize claim.
+> **$1,000 FiledCrews credit**  
+> Enter the email you use with FiledCrews to submit your prize claim.
 
 After submission:
 
 > Your $1,000 credit claim is reserved for review.  
-> LeadMagic will verify your account offline. We will contact you with the result.
+> FiledCrews will verify your account offline. We will contact you with the result.
 
 For players after all three provisional claims have been submitted:
 
@@ -96,11 +96,11 @@ These must be confirmed before prize mode goes live:
 - Season start and end timestamp, including time zone
 - Age requirement
 - Eligible countries or regions
-- One prize per person and LeadMagic account
-- Whether LeadMagic accounts must exist before the season begins
+- One prize per person and FiledCrews account
+- Whether FiledCrews accounts must exist before the season begins
 - Credit expiry, transferability, and product restrictions
 - Claim-submission deadline, recommended: 15 minutes after finish
-- LeadMagic review service-level target
+- FiledCrews review service-level target
 - Tie-break method for identical server timestamps
 - Disqualification and replacement-winner process
 - Sponsor and administrator names
@@ -347,7 +347,7 @@ Supabase/Postgres
   ├─ leaderboard read model
   └─ administrator-only claim workflow
 
-LeadMagic offline process
+FiledCrews offline process
   ├─ receives a restricted winner report from AT30
   ├─ verifies submitted emails manually
   └─ reports approve or reject decisions to AT30
@@ -395,7 +395,7 @@ Create a new migration, for example `004_canopy_run_competition.sql`.
 | `run_sessions` | Server-created active runs | Owner read only |
 | `run_checkpoints` | Validated checkpoint events | Owner read only |
 | `competition_runs` | Finalised run result | Owner read; public redacted leaderboard read |
-| `prize_claims` | Submitted LeadMagic email and review status | No direct client read or write |
+| `prize_claims` | Submitted FiledCrews email and review status | No direct client read or write |
 | `prize_waitlist` | Ordered replacement candidates | No direct client access |
 | `competition_audit_log` | Security and admin audit trail | Admin only |
 
@@ -457,7 +457,7 @@ prize_claims
 - Never expose the email through a public view, the client Data API, logs, or a leaderboard.
 - Restrict email export and claim review to superadmins or a dedicated `competition_manager` role.
 - Log every export and review action.
-- The submission UI must include explicit consent to share the email and finishing position with LeadMagic for prize administration.
+- The submission UI must include explicit consent to share the email and finishing position with FiledCrews for prize administration.
 
 ### RLS rules
 
@@ -568,7 +568,7 @@ Output:
   "claimStatus": "pending_review",
   "prizePosition": 1,
   "amountCents": 100000,
-  "message": "Your prize claim has been reserved for LeadMagic review."
+  "message": "Your prize claim has been reserved for FiledCrews review."
 }
 ```
 
@@ -588,7 +588,7 @@ Add a Competition section to the existing secure admin portal.
 - Prize tier state
 - Live run and validation monitor
 - Leaderboards
-- Pending LeadMagic claims
+- Pending FiledCrews claims
 - Offline export history
 - Claim review and promotion queue
 - Rules version and announcement controls
@@ -606,13 +606,13 @@ Add a Competition section to the existing secure admin portal.
 - Publish a non-sensitive winner announcement
 - Suspend a player or invalidate a run with a required reason
 
-### Offline LeadMagic export
+### Offline FiledCrews export
 
 The report should include only:
 
 - Prize position and amount
 - AT30 claim ID
-- Submitted LeadMagic email
+- Submitted FiledCrews email
 - Finish timestamp
 - Public display name
 - Rules version accepted
@@ -669,14 +669,14 @@ Deliver:
 - Approved official-rules inputs
 - Course map and obstacle list
 - Avatar reference board and animation list
-- LeadMagic offline review workflow
+- FiledCrews offline review workflow
 - Prize-card copy
 
 Acceptance:
 
 - No missing prize eligibility decision
 - No claim language promises delivery before review
-- One owner for LeadMagic review and player support
+- One owner for FiledCrews review and player support
 
 ### Phase B: playable vertical slice
 
@@ -797,7 +797,7 @@ Acceptance:
 - Client clock changes
 - Teleport and skipped-checkpoint attempts
 - Anonymous-account reset
-- Duplicate LeadMagic email submission
+- Duplicate FiledCrews email submission
 - Unauthorized read of another player’s run or claim
 - Unauthorized admin function call
 
@@ -816,11 +816,11 @@ Canopy Run is ready to launch only when:
 
 - A new player can complete a run without instruction outside the game.
 - The avatar feels expressive and natural on desktop and mobile.
-- All players can compete without a LeadMagic account.
-- Prize claims collect a LeadMagic email only after a qualifying finish card.
+- All players can compete without a FiledCrews account.
+- Prize claims collect a FiledCrews email only after a qualifying finish card.
 - Prize claims are presented as pending review, never instant delivery.
 - The $1,000, $700, and $300 tiers cannot be double allocated.
-- Admins can export and review claims offline with LeadMagic.
+- Admins can export and review claims offline with FiledCrews.
 - Rejected claims can be replaced fairly from the queue.
 - The game remains enjoyable as Free Play once rewards are no longer available.
 - The landing page can list Canopy Run as a distinct AT30 experience with its own entry point.

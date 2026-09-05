@@ -7,11 +7,11 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 8080,
-    allowedHosts: ['.railway.app', '.up.railway.app', 'at30-production.up.railway.app', 'at30-production-787e.up.railway.app', 'localhost'],
+    allowedHosts: true,
     cors: true
   },
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['.railway.app', '.up.railway.app', 'localhost']
+    allowedHosts: true
   }
 })

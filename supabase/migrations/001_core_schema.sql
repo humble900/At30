@@ -1,5 +1,5 @@
 -- ================================================================
--- AT30 METAVERSE MUSEUM & TELEMETRY ENGINE: CORE DATABASE SCHEMA
+-- Any30 METAVERSE MUSEUM & TELEMETRY ENGINE: CORE DATABASE SCHEMA
 -- Migration: 001_core_schema.sql
 -- ================================================================
 
@@ -92,7 +92,7 @@ create table if not exists artworks (
 -- 6. GLOBAL MUSEUM CONFIG & LIVE OPS
 create table if not exists museum_config (
   id int primary key default 1,
-  museum_name text default 'AT30 Digital Museum',
+  museum_name text default 'Any30 Digital Museum',
   tagline text default 'The Future, Curated.',
   maintenance_mode boolean default false,
   maintenance_message text default 'The museum is currently undergoing an exhibition curation update. Please check back shortly.',

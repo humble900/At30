@@ -50,7 +50,7 @@ export const FinishCardModal: React.FC<FinishCardModalProps> = ({
     e.preventDefault();
     if (!prizeTier) return;
     if (!consent) {
-      setClaimError('Please consent to offline account verification with LeadMagic.');
+      setClaimError('Please consent to offline account verification with FiledCrews.');
       return;
     }
 
@@ -110,19 +110,19 @@ export const FinishCardModal: React.FC<FinishCardModalProps> = ({
                   <Trophy size={28} className="gold-trophy" />
                   <div>
                     <span className="prize-eyebrow">PROVISIONAL PRIZE POSITION #{prizeTier.position}</span>
-                    <h3>${prizeTier.amountUsd.toLocaleString()} LeadMagic Credit</h3>
+                    <h3>${prizeTier.amountUsd.toLocaleString()} FiledCrews Credit</h3>
                   </div>
                 </div>
 
                 <p className="canopy-prize-desc">
-                  You finished in a prize position! Enter the work email you use with LeadMagic to reserve your provisional credit claim.
+                  You finished in a prize position! Enter the work email you use with FiledCrews to reserve your provisional credit claim.
                 </p>
 
                 <form onSubmit={handleSubmitClaim} className="canopy-claim-form">
                   <div className="canopy-input-group">
-                    <label htmlFor="leadmagic-email">LeadMagic Work Email</label>
+                    <label htmlFor="filedcrews-email">FiledCrews Work Email</label>
                     <input
-                      id="leadmagic-email"
+                      id="filedcrews-email"
                       type="email"
                       required
                       placeholder="your.name@company.com"
@@ -139,7 +139,7 @@ export const FinishCardModal: React.FC<FinishCardModalProps> = ({
                       required
                     />
                     <span>
-                      I agree to submit my work email for offline verification by LeadMagic and AT30 under the{' '}
+                      I agree to submit my work email for offline verification by FiledCrews and Any30 under the{' '}
                       <button type="button" className="inline-link" onClick={onOpenRules}>
                         Official Rules
                       </button>.
@@ -164,7 +164,7 @@ export const FinishCardModal: React.FC<FinishCardModalProps> = ({
                 <p>{claimMessage}</p>
                 <div className="canopy-review-notice">
                   <ShieldCheck size={16} />
-                  <span>LeadMagic verifies accounts offline. Results will be confirmed directly.</span>
+                  <span>FiledCrews verifies accounts offline. Results will be confirmed directly.</span>
                 </div>
               </div>
             )}
@@ -192,7 +192,7 @@ export const FinishCardModal: React.FC<FinishCardModalProps> = ({
             <span>Leaderboard</span>
           </button>
           <button className="canopy-btn text-only" onClick={onExit}>
-            <span>Return to AT30</span>
+            <span>Return to Any30</span>
           </button>
         </div>
       </div>

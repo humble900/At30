@@ -58,16 +58,16 @@ class CanopyCompetitionService {
     prizeTiers: PrizeTierState[];
   }> {
     const defaultPrizes: PrizeTierState[] = [
-      { position: 1, amountUsd: 1000, label: 'First Place Winner', sponsorProduct: '$1,000 LeadMagic Credit', state: 'available' },
-      { position: 2, amountUsd: 700, label: 'Second Place Winner', sponsorProduct: '$700 LeadMagic Credit', state: 'available' },
-      { position: 3, amountUsd: 300, label: 'Third Place Winner', sponsorProduct: '$300 LeadMagic Credit', state: 'available' }
+      { position: 1, amountUsd: 1000, label: 'First Place Winner', sponsorProduct: '$1,000 FiledCrews Credit', state: 'available' },
+      { position: 2, amountUsd: 700, label: 'Second Place Winner', sponsorProduct: '$700 FiledCrews Credit', state: 'available' },
+      { position: 3, amountUsd: 300, label: 'Third Place Winner', sponsorProduct: '$300 FiledCrews Credit', state: 'available' }
     ];
 
     if (!supabase) {
       return {
         seasonId: 'local-practice-season',
         seasonTitle: 'Touch Grass: Canopy Run — Inaugural Season',
-        sponsor: 'LeadMagic',
+        sponsor: 'FiledCrews',
         prizeTiers: defaultPrizes
       };
     }
@@ -86,7 +86,7 @@ class CanopyCompetitionService {
         return {
           seasonId: 'c0000000-0000-0000-0000-000000000001',
           seasonTitle: 'Touch Grass: Canopy Run Season 1',
-          sponsor: 'LeadMagic',
+          sponsor: 'FiledCrews',
           prizeTiers: defaultPrizes
         };
       }
@@ -115,7 +115,7 @@ class CanopyCompetitionService {
       return {
         seasonId: 'c0000000-0000-0000-0000-000000000001',
         seasonTitle: 'Touch Grass: Canopy Run Season 1',
-        sponsor: 'LeadMagic',
+        sponsor: 'FiledCrews',
         prizeTiers: defaultPrizes
       };
     }
@@ -268,7 +268,7 @@ class CanopyCompetitionService {
   }
 
   /**
-   * Submit LeadMagic Email Prize Claim for Offline Verification.
+   * Submit FiledCrews Email Prize Claim for Offline Verification.
    */
   public async submitPrizeClaim(
     runId: string,
@@ -277,13 +277,13 @@ class CanopyCompetitionService {
     amountUsd: number
   ): Promise<{ success: boolean; message: string }> {
     if (!email || !email.includes('@')) {
-      return { success: false, message: 'Please enter a valid LeadMagic work email address.' };
+      return { success: false, message: 'Please enter a valid FiledCrews work email address.' };
     }
 
     if (!supabase) {
       return {
         success: true,
-        message: `Your $${amountUsd.toLocaleString()} LeadMagic credit claim is reserved for offline review.`
+        message: `Your $${amountUsd.toLocaleString()} FiledCrews credit claim is reserved for offline review.`
       };
     }
 
@@ -327,7 +327,7 @@ class CanopyCompetitionService {
 
       return {
         success: true,
-        message: `Your $${amountUsd.toLocaleString()} LeadMagic credit claim is reserved for offline review.`
+        message: `Your $${amountUsd.toLocaleString()} FiledCrews credit claim is reserved for offline review.`
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown submission error';

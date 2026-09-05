@@ -1,5 +1,5 @@
 -- ================================================================
--- AT30: PUBLIC PLATFORM STATS & GAME PLAYS COUNTER
+-- Any30: PUBLIC PLATFORM STATS & GAME PLAYS COUNTER
 -- Migration: 005_public_visitor_and_game_stats.sql
 -- ================================================================
 

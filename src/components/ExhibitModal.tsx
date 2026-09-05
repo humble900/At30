@@ -89,9 +89,9 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
         >
           <div className="flex items-center space-x-3">
             <span className="p-2 rounded-lg bg-black/30 backdrop-blur-sm">
-              {exhibit.brandKey === 'posterbooking' && <Tv className="w-6 h-6 text-cyan-300" />}
+              {exhibit.brandKey === 'ripplepos' && <Tv className="w-6 h-6 text-cyan-300" />}
               {exhibit.brandKey === 'clayrent' && <Key className="w-6 h-6 text-amber-300" />}
-              {exhibit.brandKey === 'leadmagic' && <Cpu className="w-6 h-6 text-purple-300" />}
+              {exhibit.brandKey === 'filedcrews' && <Cpu className="w-6 h-6 text-purple-300" />}
             </span>
             <div>
               <div className="text-xs uppercase tracking-wider font-semibold text-white/80">
@@ -118,12 +118,12 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
           
           {/* DIGITAL SIGNAGE & ARTWORK DISPLAY SHOWCASE */}
-          {exhibit.brandKey === 'posterbooking' && (
+          {exhibit.brandKey === 'ripplepos' && (
             <div className="rounded-xl border border-white/15 overflow-hidden bg-black/60 shadow-xl space-y-3 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-xs font-bold text-cyan-400">
                   <Palette className="w-4 h-4" />
-                  <span>POSTERBOOKING LIVE 8K DIGITAL CANVAS & ART PLAYLIST</span>
+                  <span>RIPPLEPOS LIVE 8K DIGITAL CANVAS & ART PLAYLIST</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
                   {[0, 1, 2, 3].map((idx) => (
@@ -157,7 +157,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
                 {/* Glass Art Overlay Badge */}
                 <div className="relative z-10 bg-black/70 backdrop-blur-md border border-white/20 p-3 rounded-lg max-w-sm">
                   <div className="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
-                    ● Broadcasting on PosterBooking Display #PB-884
+                    ● Broadcasting on RipplePOS Display #RP-884
                   </div>
                   <div className="font-serif text-sm font-bold text-white">
                     {currentArt.title} ({currentArt.year})
@@ -169,8 +169,8 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
 
                 {/* Bottom ticker banner on screen */}
                 <div className="relative z-10 bg-black/80 backdrop-blur-md border-t border-white/15 px-3 py-1.5 rounded-md flex items-center justify-between text-[11px] text-gray-300 font-mono">
-                  <span>POSTERBOOKING CLOUD SYNC: 100% ONLINE</span>
-                  <span className="text-cyan-400 font-bold">ANY TV • FIRESTICK • ANDROID • PI</span>
+                  <span>RIPPLEPOS CLOUD SYNC: 100% ONLINE</span>
+                  <span className="text-cyan-400 font-bold">TERMINALS • TABLETS • ANDROID • IOS</span>
                 </div>
               </div>
             </div>
@@ -294,7 +294,7 @@ export const ExhibitModal: React.FC<ExhibitModalProps> = ({
 
         {/* Modal Footer */}
         <div className="px-6 py-4 bg-black/40 border-t border-white/10 flex items-center justify-between text-xs text-gray-400">
-          <span>At30 Virtual Brand Experience</span>
+          <span>Any30 Virtual Brand Experience</span>
           <button
             onClick={() => {
               soundEngine.playClick();

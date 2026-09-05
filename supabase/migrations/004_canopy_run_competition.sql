@@ -5,7 +5,7 @@ create table if not exists public.competition_seasons (
   id uuid primary key default gen_random_uuid(),
   experience_key text not null default 'canopy_run',
   title text not null default 'Touch Grass: Canopy Run Season 1',
-  sponsor text not null default 'LeadMagic',
+  sponsor text not null default 'FiledCrews',
   status text not null default 'live' check (status in ('draft','scheduled','live','review','complete','archived')),
   starts_at timestamptz not null default now(),
   ends_at timestamptz not null default (now() + interval '30 days'),
@@ -20,7 +20,7 @@ create table if not exists public.competition_prize_tiers (
   position smallint not null check (position between 1 and 3),
   amount_usd integer not null check (amount_usd > 0),
   label text not null,
-  sponsor_product text not null default 'LeadMagic Credit',
+  sponsor_product text not null default 'FiledCrews Credit',
   state text not null default 'available' check (state in ('available','held','pending_review','approved','rejected','delivered')),
   claimed_at timestamptz,
   held_until timestamptz,
@@ -115,14 +115,14 @@ where r.status = 'validated' and r.duration_ms is not null;
 
 grant select on public.canopy_leaderboard_view to anon, authenticated;
 
--- Seed default Live Season and Prize Ladder ($1,000, $700, $300 LeadMagic credits)
+-- Seed default Live Season and Prize Ladder ($1,000, $700, $300 FiledCrews credits)
 insert into public.competition_seasons (id, experience_key, title, sponsor, status)
-values ('c0000000-0000-0000-0000-000000000001', 'canopy_run', 'Touch Grass: Canopy Run — Inaugural Season', 'LeadMagic', 'live')
+values ('c0000000-0000-0000-0000-000000000001', 'canopy_run', 'Touch Grass: Canopy Run — Inaugural Season', 'FiledCrews', 'live')
 on conflict (id) do update set status = 'live';
 
 insert into public.competition_prize_tiers (season_id, position, amount_usd, label, sponsor_product, state)
 values 
-  ('c0000000-0000-0000-0000-000000000001', 1, 1000, 'First Place Winner', '$1,000 LeadMagic Credit', 'available'),
-  ('c0000000-0000-0000-0000-000000000001', 2, 700, 'Second Place Winner', '$700 LeadMagic Credit', 'available'),
-  ('c0000000-0000-0000-0000-000000000001', 3, 300, 'Third Place Winner', '$300 LeadMagic Credit', 'available')
+  ('c0000000-0000-0000-0000-000000000001', 1, 1000, 'First Place Winner', '$1,000 FiledCrews Credit', 'available'),
+  ('c0000000-0000-0000-0000-000000000001', 2, 700, 'Second Place Winner', '$700 FiledCrews Credit', 'available'),
+  ('c0000000-0000-0000-0000-000000000001', 3, 300, 'Third Place Winner', '$300 FiledCrews Credit', 'available')
 on conflict (season_id, position) do nothing;

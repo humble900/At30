@@ -1,0 +1,48 @@
+# Any30 Platform Documentation (Full Machine-Readable Reference)
+Canonical URL: https://any30.com/
+Version: 1.2.0 (2026 Season)
+
+## Platform Overview
+Any30 is a high-performance, web-based 3D multiplayer metaverse platform. The platform connects consumers with premium brands through gamified exploration, artistic curation, and verifiable reward mechanics.
+
+Unlike traditional web games or blockchain metaverses that require heavy client downloads, hardware-accelerated installs, or crypto wallet connections, Any30 runs entirely inside modern web browsers using standard WebGL and Three.js technologies.
+
+## Flagship Experiences
+
+### Experience 001: Any30 Digital Museum
+- **Status**: Live and playable.
+- **Genre**: First-person / Third-person 3D exploration and puzzle discovery.
+- **Environment**: Architectural fine art museum with volumetric skylights, polished terrazzo reflections, and acoustic sound design.
+- **Zones & Wings**:
+  1. **Reception Hall & Atrium**: Centerpiece Any30 rotunda, public statistics scoreboard, and directory totems.
+  2. **East Wing (Digital Canvas)**: Featuring high-resolution 8K displays and RipplePOS interactive cloud point-of-sale exhibit. Perk: 30% discount and 3 months cloud service.
+  3. **North Wing (Modern Habitat Pavilion)**: Architectural blueprints and ClayRent luxury equipment rental exhibit. Perk: $100 booking credit.
+  4. **West Wing (Field Operations Command)**: Command console and FiledCrews mobile workforce dispatch showcase. Perk: 30% annual subscription savings.
+- **Player Passport**: Visitors record their progress as they discover vouchers, with instant clipboard copy and direct verified redemption URLs.
+- **Multiplayer Architecture**: Real-time presence with synchronized visitor avatars, color customization, and localized proximity chat bubbles.
+
+### Experience 002: Canopy Run
+- **Status**: Coming Soon / In Active Production.
+- **Genre**: Jungle canopy parkour race and skill trial.
+- **Environment**: High-altitude forest canopy bridges, waterfalls, and obstacle platforms.
+
+## Business Models & Brand Integration (Partners Hub)
+- **Direct Portal**: https://any30.com/partners
+- **Sponsorship Formats**:
+  - In-World Gift Sponsorships: Gamified riddles hiding genuine discount keys or digital perks.
+  - 3D Digital Signage: Virtual billboard placements in main halls with real-time impression telemetry.
+- **Standard Verification Protocol**: Offline audit by Any30 administrators ensures all vouchers are authentic and redeemable without deceptive conditions.
+
+## Frequently Asked Questions (FAQ)
+
+### What is Any30?
+Any30 is an in-browser platform hosting seasonal multiplayer events, virtual worlds, and brand-sponsored gift discovery quests.
+
+### Is Any30 free to enter?
+Yes, Any30 is 100% free to enter with no account registration or payment required.
+
+### Do I need a cryptocurrency wallet?
+No crypto wallet or token purchase is required to enter the museum, play games, or claim discount perks.
+
+### How can a brand or company participate?
+Brands can visit https://any30.com/partners to reserve an available exhibit slot or sign up for in-world billboard placements. Direct inquiries can also be made via WhatsApp at +1 409 422 9714.

@@ -1,76 +1,93 @@
 import React, { useEffect, useState } from 'react';
 import {
   ArrowRight,
-  BarChart3,
-  Building2,
   ChevronRight,
   Compass,
   Gamepad2,
+  Gift,
   Globe2,
   Leaf,
-  ShieldCheck,
-  User,
-  Palette
+  Lock,
+  Palette,
+  Scale,
+  Sparkles,
+  User
 } from 'lucide-react';
-import heroImage from '../assets/hero.png';
+import museumCoverImage from '../assets/museum-hero-cover.jpg';
 import touchGrassImage from '../assets/touch-grass-preview.webp';
 import { visitorStats, type PlatformPublicStats } from '../services/VisitorStatsService';
+import { TokenTransparencyModal } from './TokenTransparencyModal';
 import './LandingPage.css';
 
 type LandingPageProps = {
   savedName: string;
   savedColor: string;
   onEnter: () => void;
-  onEnterCanopy: () => void;
+  onEnterCanopy?: () => void;
   onRequestCustomize: () => void;
 };
 
 
-const partners = ['PosterBooking', 'ClayRent', 'LeadMagic', 'AT30 Labs'];
-
-const experiences = [
+const activeRewards = [
   {
-    number: '01',
-    title: 'Digital Canvas Wing',
-    company: 'PosterBooking',
-    description: 'Explore responsive displays and decode the signal hidden inside the gallery.',
-    accent: '#51c7ff',
-    icon: Globe2,
+    id: 'VAULT-01',
+    title: 'Live Launch Community Mystery Gift',
+    badge: 'ACTIVE QUEST',
+    value: '$10 Digital Gift Card',
+    sponsor: 'Any30 Launch Mystery',
+    location: 'Gallery Corridors · Physical Exhibit',
+    hint: 'Inspect the central physical 3D exhibit to decrypt coordinates.',
+    tier: 'TIER 1 ARTIFACT'
   },
   {
-    number: '02',
-    title: 'Modern Habitat',
-    company: 'ClayRent',
-    description: 'Step inside a premium spatial showcase built around modern rental experiences.',
-    accent: '#ffb86c',
-    icon: Building2,
+    id: 'VAULT-02',
+    title: 'Cloud POS & Screen Hardware Voucher',
+    badge: 'FOUNDING PARTNER',
+    value: '30% Off + 3 Mo Cloud',
+    sponsor: 'RipplePOS',
+    location: 'East Wing · 8K Digital Canvas',
+    hint: 'Decodable on the interactive digital display in the east gallery.',
+    tier: 'HARDWARE PASS'
   },
   {
-    number: '03',
-    title: 'Intelligence Vault',
-    company: 'LeadMagic',
-    description: 'Trace visitor signals and uncover the code hidden inside the intelligence chamber.',
-    accent: '#a98cff',
-    icon: ShieldCheck,
+    id: 'VAULT-03',
+    title: 'Luxury Habitat Booking Credit',
+    badge: 'SIGNAGE SPONSOR',
+    value: '$100 Rental Credit',
+    sponsor: 'ClayRent',
+    location: 'Reception · Modern Habitat Showcase',
+    hint: 'Encoded inside the architectural reception totem display.',
+    tier: 'CREDIT VOUCHER'
   },
+  {
+    id: 'VAULT-04',
+    title: 'Field Workforce Accelerator Pass',
+    badge: 'SIGNAGE SPONSOR',
+    value: '30% Off Annual Plan',
+    sponsor: 'FiledCrews',
+    location: 'Command Chamber · Terminal Matrix',
+    hint: 'Available upon scanning the operations terminal matrix.',
+    tier: 'ACCELERATOR PASS'
+  }
 ];
 
+
 const questions = [
-  { question: 'What is AT30?', answer: 'AT30 is a browser-based platform for seasonal multiplayer events and games. The Digital Museum is Experience 001—the first live world on the platform.' },
-  { question: 'Do I need to download an app?', answer: 'No. AT30 runs in a modern web browser on supported phones, tablets, and computers.' },
-  { question: 'Can I play with other people?', answer: 'Yes. AT30 experiences are designed to be social. In the Digital Museum, connected visitors can see nearby players and use short, proximity-based speech bubbles.' },
-  { question: 'What can I play now?', answer: 'The first live experience is AT30 Digital Museum. Choose an avatar, explore three brand galleries, inspect exhibits, solve clues, and collect rewards.' },
-  { question: 'Can my company host an event or game?', answer: 'Yes. AT30 works with organisations to create hosted events, seasonal games, launches, and persistent branded experiences shaped around their audience and goals.' },
+  { question: 'What is Any30?', answer: 'Any30 is the playable Museum of Gifts. It is a browser-based 3D multiplayer world where visitors explore themed exhibits, solve clues, and unlock real brand rewards, coupons, and community prizes.' },
+  { question: 'Do I need to download an app or connect a wallet?', answer: 'No. Any30 runs directly in your web browser with zero downloads, zero extensions, and zero wallet connections. It is 100% free to enter and play.' },
+  { question: 'How do I win gifts?', answer: 'Walk up to exhibits inside the museum and press "Inspect" (or tap on mobile). Read the exhibit story, follow the clue, and solve the interactive mini-puzzle to unlock the reward in your museum passport.' },
+  { question: 'What is the $Any30 token?', answer: 'The $Any30 community token is completely optional. You do NOT need $Any30 to play the museum, enter galleries, or win gifts. It provides no equity, no guaranteed return, and buying it does not improve your winning odds.' },
+  { question: 'Can my company sponsor a gift or book an ad?', answer: 'Yes! Brands, creators, and projects can sponsor a hidden gift or book digital signage displays on our dedicated /partners page.' },
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   savedName,
   savedColor,
   onEnter,
-  onEnterCanopy,
   onRequestCustomize
 }) => {
   const [stats, setStats] = useState<PlatformPublicStats>(() => visitorStats.getStats());
+  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
 
   useEffect(() => {
     void visitorStats.recordSiteVisit().then(setStats);
@@ -80,19 +97,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   return (
     <main className="landing-shell">
+      {/* Primary Navigation */}
       <nav className="landing-nav" aria-label="Primary navigation">
-        <a className="brand-mark" href="#top" aria-label="AT30 home">
+        <a className="brand-mark" href="#top" aria-label="Any30 home">
           <span className="brand-glyph"><span /></span>
-          <span>AT30</span>
+          <span>Any30</span>
         </a>
         <div className="nav-links">
-          <a href="#worlds">Experiences</a>
-          <a href="#partner-roster">Partners</a>
-          <a href="#enterprise">Host on AT30</a>
+          <a href="#worlds">Worlds</a>
+          <a href="#vault">Gifts Vault</a>
+          <a href="/partners">Partners &amp; Ad Spaces</a>
+          <button
+            onClick={() => setIsTokenModalOpen(true)}
+            className="text-xs font-semibold text-gray-400 hover:text-cyan-300 transition-colors cursor-pointer bg-transparent border-none flex items-center gap-1"
+          >
+            <Scale size={13} /> Token Disclosures
+          </button>
         </div>
         
         <div className="flex items-center gap-2.5">
-          <div className="nav-stats-chip hidden md:inline-flex" title="Total public visitors who have explored the AT30 platform">
+          <div className="nav-stats-chip hidden md:inline-flex" title="Total public visitors who have explored the Any30 platform">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span><strong>{stats.totalVisitors.toLocaleString()}</strong> visitors</span>
           </div>
@@ -109,20 +133,51 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </button>
           )}
           <button className="nav-cta cursor-pointer" onClick={onEnter}>
-            Play now <ArrowRight size={16} />
+            Enter Museum <ArrowRight size={16} />
           </button>
         </div>
       </nav>
 
+      {/* Hero Section: Repositioned as The Playable Museum of Gifts */}
       <section className="landing-hero" id="top">
         <div className="hero-copy">
-          <div className="eyebrow">SEASONAL WORLDS · EVENTS · GAMES</div>
-          <h1>Enter the next<br /><em>experience.</em></h1>
+          <div className="eyebrow flex items-center gap-2">
+            <Sparkles size={14} className="text-amber-400" />
+            <span>THE PLAYABLE MUSEUM OF GIFTS · MULTIPLAYER TREASURE HUNT</span>
+          </div>
+          <h1>Explore worlds.<br /><em>Find real gifts.</em></h1>
           <p>
-            Step into new worlds, explore with others, follow clues, and find hidden rewards.
-            Some worlds stay for a season. Others grow into something bigger.
-            <span className="hero-next-world">Start with the AT30 Digital Museum. The next world could take you anywhere.</span>
+            Step into a multiplayer 3D museum directly in your browser. Inspect interactive exhibits,
+            solve hidden clues, and unlock real brand rewards, vouchers, and community prizes.
+            <span className="hero-next-world">100% Free. No downloads. No wallet required to enter or win.</span>
           </p>
+
+          {/* 3-Step How-It-Works Loop */}
+          <div className="hero-how-it-works">
+            <div className="step-item">
+              <span className="step-num">01</span>
+              <div>
+                <strong>Enter Free</strong>
+                <small>3D world in browser</small>
+              </div>
+            </div>
+            <span className="step-divider">→</span>
+            <div className="step-item">
+              <span className="step-num">02</span>
+              <div>
+                <strong>Solve Clues</strong>
+                <small>Inspect 3D exhibits</small>
+              </div>
+            </div>
+            <span className="step-divider">→</span>
+            <div className="step-item">
+              <span className="step-num">03</span>
+              <div>
+                <strong>Claim Gifts</strong>
+                <small>Unlock vouchers &amp; perks</small>
+              </div>
+            </div>
+          </div>
 
           <div className="hero-social-proof" aria-label="Live platform statistics">
             <div className="proof-pill">
@@ -131,18 +186,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <span className="live-dot" />
               </span>
               <Globe2 size={15} className="text-cyan-600" />
-              <span><strong>{stats.totalVisitors.toLocaleString()}</strong> people have visited AT30</span>
+              <span><strong>{stats.totalVisitors.toLocaleString()}</strong> explorers have entered</span>
             </div>
             <div className="proof-pill proof-pill--secondary">
               <Gamepad2 size={15} className="text-emerald-600" />
-              <span><strong>{stats.totalGamePlays.toLocaleString()}</strong> games played</span>
+              <span><strong>{stats.totalGamePlays.toLocaleString()}</strong> hunts played</span>
             </div>
           </div>
 
           <div className="hero-actions">
             <button className="primary-cta cursor-pointer" onClick={onEnter}>
-              <span className="cta-icon"><Gamepad2 size={19} /></span>
-              <span>Play Digital Museum as {savedName || 'Curator'}</span>
+              <span className="cta-icon"><Gift size={19} /></span>
+              <span>Play Gift Hunt as {savedName || 'Curator'}</span>
               <ArrowRight size={18} />
             </button>
             <button className="text-link cursor-pointer flex items-center gap-1" onClick={onRequestCustomize}>
@@ -151,117 +206,208 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="Preview of the AT30 digital museum">
+        <div className="hero-visual" aria-label="Preview of the Any30 digital museum">
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
           <div className="visual-halo" />
           <div className="museum-card">
             <div className="card-topline">
-              <span>LIVE EXPERIENCE</span>
-              <span>AT30 / 001</span>
+              <span>LIVE TREASURE HUNT</span>
+              <span>Any30 / 001</span>
             </div>
-            <img src={heroImage} alt="AT30 museum curator avatar" />
+            <img src={museumCoverImage} alt="Cinematic view inside the Any30 digital museum with glowing exhibits and visitors" />
             <div className="card-caption">
-              <div><small>EXPERIENCE 001 · LIVE NOW</small><strong>AT30 Digital Museum</strong></div>
-              <Compass size={24} />
+              <div>
+                <small>EXPERIENCE 001 · 3 WINGS OPEN</small>
+                <strong>The Playable Museum of Gifts</strong>
+              </div>
+              <Gift size={24} className="text-amber-400" />
             </div>
           </div>
         </div>
       </section>
 
+      {/* Human Founder Story (Witty, Real & Contagious) */}
+      <section className="founder-story-section">
+        <div className="founder-story-inner">
+          <span className="kicker">HOW THIS STARTED</span>
+          <h2>A human experiment in digital attention.</h2>
+          <p>
+            The modern internet is flooded with banner ads that get blocked, popups that annoy you, and empty corporate promises.
+            We wanted to build something fun instead: <em>What if exploring a brand felt like exploring an interactive 3D museum?</em>
+          </p>
+          <p>
+            No 50GB downloads. No crypto wallet wall before you can play. Just a living, multiplayer world running directly in your browser,
+            where curious people explore, solve clues, and discover real rewards hidden by real brands.
+          </p>
+          <div className="founder-quote-card">
+            <p>
+              “Can a browser-based museum turn into the internet’s favorite treasure hunt? Step inside and find the clues for yourself.”
+            </p>
+            <span className="founder-signoff">— The Any30 Curators</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Active Gifts Vault Section */}
+      <section className="vault-section" id="vault" aria-labelledby="vault-title">
+        <div className="vault-container">
+          <div className="vault-header">
+            <div className="vault-header-lead">
+              <div className="vault-telemetry-badge">
+                <span className="telemetry-dot" />
+                <span className="telemetry-label">REGISTRY // 02 · VERIFIED INVENTORY</span>
+              </div>
+              <h2 id="vault-title" className="vault-title">Current Active Gifts to Discover</h2>
+              <p className="vault-subtitle">
+                Inspect physical 3D exhibits inside the museum corridors to unlock verified vouchers into your passport inventory. 100% free to claim upon discovery.
+              </p>
+            </div>
+            <div className="vault-meta-summary">
+              <div className="vault-stat-item">
+                <span className="vault-stat-num">4</span>
+                <span className="vault-stat-label">Active Gifts Online</span>
+              </div>
+              <div className="vault-stat-divider" />
+              <div className="vault-stat-item">
+                <span className="vault-stat-num">FREE</span>
+                <span className="vault-stat-label">Zero Entry or Claim Fees</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="vault-grid">
+            {activeRewards.map((reward) => (
+              <article key={reward.id} className="vault-card">
+                <div className="vault-card-topbar">
+                  <span className="vault-card-ref">{reward.id}</span>
+                  <span className="vault-card-status">
+                    <span className="status-ping-dot" />
+                    {reward.badge}
+                  </span>
+                </div>
+
+                <div className="vault-card-body">
+                  <span className="vault-card-tier">{reward.tier}</span>
+                  <h3 className="vault-card-title">{reward.title}</h3>
+                  <div className="vault-card-value">{reward.value}</div>
+                </div>
+
+                <div className="vault-card-specs">
+                  <div className="vault-spec-row">
+                    <span className="vault-spec-key">SPONSOR</span>
+                    <span className="vault-spec-val">{reward.sponsor}</span>
+                  </div>
+                  <div className="vault-spec-row">
+                    <span className="vault-spec-key">LOCATION</span>
+                    <span className="vault-spec-val">{reward.location}</span>
+                  </div>
+                </div>
+
+                <div className="vault-card-intel">
+                  <Compass size={14} className="vault-intel-icon" />
+                  <p className="vault-intel-text">{reward.hint}</p>
+                </div>
+
+                <div className="vault-card-footer">
+                  <button onClick={onEnter} className="vault-locate-btn">
+                    <span>Locate In Museum</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Experiences Showcase */}
       <section className="worlds-section" id="worlds" aria-labelledby="worlds-title">
         <div className="worlds-heading">
-          <div><span className="kicker">AT30 EXPERIENCES</span><h2 id="worlds-title">Choose your next world.</h2></div>
-          <p>Each AT30 experience has its own place, story, and way to play. Enter what is live now and see what we are building next.</p>
+          <div><span className="kicker">WORLDS &amp; EXPERIENCES</span><h2 id="worlds-title">Choose your destination.</h2></div>
+          <p>Each Any30 world has its own terrain, challenges, and rewards. Jump in now.</p>
         </div>
 
         <div className="world-catalogue">
           <article className="world-card world-card--live">
             <div className="world-card-media">
-              <img src={heroImage} alt="Curator standing inside AT30 Digital Museum" />
+              <img src={museumCoverImage} alt="Inside the Any30 Museum of Gifts — glowing exhibits and explorers" />
               <div className="world-badges"><span className="world-badge world-badge--live">Live now</span><span className="world-index">Experience 001</span></div>
             </div>
             <div className="world-card-body">
               <div className="world-type"><Compass size={16}/><span>Explore · Inspect · Discover</span></div>
-              <h3>AT30 Digital Museum</h3>
-              <p>Walk through three galleries, uncover the stories behind each exhibit, follow the clues, and collect the rewards hidden inside.</p>
+              <h3>The Museum of Gifts</h3>
+              <p>Walk through three distinct wings, inspect exhibits, solve interactive puzzles, and fill your passport with real rewards.</p>
               <div className="world-facts"><span>3 galleries</span><span>6 exhibits</span><span>{stats.museumPlays.toLocaleString()} explorers played</span></div>
-              <button className="world-enter cursor-pointer" onClick={onEnter}>Enter the museum <ArrowRight size={18}/></button>
-
+              <button className="world-enter cursor-pointer" onClick={onEnter}>Enter the Museum <ArrowRight size={18}/></button>
             </div>
           </article>
 
           <article className="world-card world-card--upcoming">
             <div className="world-card-media">
               <img src={touchGrassImage} alt="Concept preview of explorers crossing a forest obstacle course" />
-              <div className="world-badges"><span className="world-badge world-badge--live">Play the course</span><span className="world-index">Experience 002</span></div>
+              <div className="world-badges"><span className="world-badge world-badge--coming-soon"><Lock size={11}/> Coming Soon</span><span className="world-index">Experience 002</span></div>
             </div>
             <div className="world-card-body">
               <div className="world-type"><Leaf size={16}/><span>Run · Climb · Compete</span></div>
               <h3>Canopy Run</h3>
-              <p>Leave the desk behind and take on a fast forest course where timing, movement, and bold shortcuts decide your place.</p>
-              <div className="world-facts"><span>Nature course</span><span>Skill-based</span><span>Seasonal</span></div>
-              <button className="world-enter cursor-pointer" onClick={onEnterCanopy}>Enter Canopy Run <ArrowRight size={18}/></button>
+              <p>Leave the desk behind and race through a fast-paced forest canopy obstacle course where shortcuts and timing decide the prize.</p>
+              <div className="world-facts"><span>Nature course</span><span>Skill-based</span><span>Speed challenge</span></div>
+              <div className="world-enter world-enter--disabled"><Lock size={16}/> Coming Soon</div>
             </div>
           </article>
         </div>
-
-        <div className="worlds-note"><span>001 is open</span><p>New places will join AT30 over time. Every experience gets its own entrance, identity, and reason to return.</p></div>
       </section>
 
-      <section className="trust-strip" id="partner-roster">
-        <span>Experience 001 partners</span>
-        <div>{partners.map((partner) => <strong key={partner}>{partner}</strong>)}</div>
-      </section>
-
-      <section className="experience-section" id="experience">
-        <div className="section-heading">
-          <div><span className="kicker">INSIDE EXPERIENCE 001</span><h2>Three wings to explore.</h2></div>
-          <p>Each wing has two exhibits and one reward. Walk up to an exhibit and inspect it to reveal the story and its clue.</p>
+      {/* Brand & Sponsor Callout */}
+      <section className="sponsor-cta-banner">
+        <div className="sponsor-cta-inner">
+          <div className="sponsor-copy">
+            <span className="kicker">WANT TO FEATURE YOUR BRAND?</span>
+            <h2>Hide your gift or book a digital billboard.</h2>
+            <p>
+              Thousands of players actively inspect our 3D exhibits looking for clues.
+              Sponsor a reward or reserve prime digital signage ad spaces in our high-traffic corridors.
+            </p>
+          </div>
+          <a href="/partners" className="sponsor-btn">
+            Explore /partners Hub <ArrowRight size={18} />
+          </a>
         </div>
-        <div className="experience-grid">
-          {experiences.map(({ icon: Icon, ...item }) => (
-            <article className="experience-card" key={item.number} style={{ '--card-accent': item.accent } as React.CSSProperties}>
-              <div className="experience-card-top"><span>{item.number}</span><Icon size={24} /></div>
-              <small>{item.company}</small>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-              <button onClick={onEnter} className="cursor-pointer" aria-label={`Explore ${item.title}`}><ArrowRight size={18} /></button>
-            </article>
+      </section>
+
+      {/* FAQ */}
+      <section className="faq-section" id="questions" aria-labelledby="faq-title">
+        <div><span className="kicker">FREQUENTLY ASKED QUESTIONS</span><h2 id="faq-title">Everything you need to know.</h2></div>
+        <div className="faq-list">
+          {questions.map((item) => (
+            <details key={item.question}>
+              <summary>{item.question}<span aria-hidden="true">+</span></summary>
+              <p>{item.answer}</p>
+            </details>
           ))}
         </div>
       </section>
 
-      <section className="enterprise-section" id="enterprise">
-        <div className="enterprise-intro">
-          <span className="kicker">HOST ON AT30</span>
-          <h2>Turn your next moment into a world.</h2>
-          <p>AT30 creates multiplayer events and games around your audience, season, or launch—from a limited-time activation to a company-owned experience that can keep evolving.</p>
-          <div className="partner-status"><span>2026 partner programme</span><strong>Now reviewing briefs</strong></div>
-        </div>
-        <div className="enterprise-copy">
-          <div className="partner-offerings">
-            <article><span>01</span><div><h3>Hosted event</h3><p>A shared destination for launches, celebrations, community gatherings, and time-bound campaigns.</p></div></article>
-            <article><span>02</span><div><h3>Seasonal game</h3><p>A replayable multiplayer challenge with discoveries, social moments, rewards, and measurable goals.</p></div></article>
-            <article><span>03</span><div><h3>Company-owned world</h3><p>A distinctive experience built around your identity and designed to expand across future seasons.</p></div></article>
-          </div>
-          <div className="partner-delivery"><BarChart3 size={19}/><p><strong>Designed to launch, measure, and evolve.</strong><span>Audience, gameplay loop, moderation, success metrics, and seasonal roadmap are defined before production.</span></p></div>
-          <button className="light-cta cursor-pointer" onClick={onEnter}>View the live experience <ArrowRight size={18} /></button>
-        </div>
-      </section>
-
-      <section className="faq-section" id="questions" aria-labelledby="faq-title">
-        <div><span className="kicker">AT30 PLATFORM</span><h2 id="faq-title">Play now. More worlds next.</h2></div>
-        <div className="faq-list">
-          {questions.map((item) => <details key={item.question}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}
-        </div>
-      </section>
-
+      {/* Footer */}
       <footer className="landing-footer">
-        <div className="brand-mark"><span className="brand-glyph"><span /></span><span>AT30</span></div>
-        <p>Seasonal events and games, built to bring people together.</p>
-        <div className="footer-meta"><span>© 2026 AT30</span><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+        <div className="brand-mark"><span className="brand-glyph"><span /></span><span>Any30</span></div>
+        <p>The Playable Museum of Gifts · Built for real internet explorers.</p>
+        <div className="footer-meta">
+          <span>© 2026 Any30</span>
+          <a href="/partners">Partners &amp; Ad Spaces</a>
+          <button onClick={() => setIsTokenModalOpen(true)} className="footer-link-btn">Token Policy</button>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </div>
       </footer>
+
+      {/* Token Transparency Modal */}
+      {isTokenModalOpen && (
+        <TokenTransparencyModal onClose={() => setIsTokenModalOpen(false)} />
+      )}
     </main>
   );
 };
+
+export default LandingPage;

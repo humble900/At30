@@ -1,5 +1,41 @@
+# Any30 Platform Robots & Indexing Policy
+# https://any30.com
+
+# General Search Engines (Google, Bing, Yahoo, DuckDuckGo, etc.)
 User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://at30.io/sitemap.xml
+# AI Search & Answer Engines (OpenAI, Anthropic, Perplexity, Google Gemini, Apple, Meta)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Sitemap & LLMs Context Index
+Sitemap: https://any30.com/sitemap.xml

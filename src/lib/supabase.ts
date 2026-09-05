@@ -48,7 +48,7 @@ export interface MuseumConfigData {
 
 export const DEFAULT_MUSEUM_CONFIG: MuseumConfigData = {
   id: 1,
-  museum_name: 'AT30 Digital Museum',
+  museum_name: 'Any30 Digital Museum',
   tagline: 'The Future, Curated.',
   maintenance_mode: false,
   maintenance_message: 'The museum is currently undergoing an exhibition curation update. Please check back shortly.',

@@ -39,7 +39,7 @@ export const MuseumInfoModal:React.FC<{point:MuseumInfoPoint;onClose:()=>void}>=
           ) : isArtifact ? (
             <>
               <p className="museum-modal__copy">
-                A high-fidelity 3D artifact curated permanently in the AT30 Museum Reception Hall.
+                A high-fidelity 3D artifact curated permanently in the Any30 Museum Reception Hall.
               </p>
               <div className="museum-modal__summary">
                 <div className="museum-modal__summary-row">
@@ -52,7 +52,7 @@ export const MuseumInfoModal:React.FC<{point:MuseumInfoPoint;onClose:()=>void}>=
                 </div>
                 <div className="museum-modal__summary-row">
                   <span>Accession</span>
-                  <strong>AT30 Special Collections (2026)</strong>
+                  <strong>Any30 Special Collections (2026)</strong>
                 </div>
                 <div className="museum-modal__note">
                   <span>This artifact serves as the reception greeting centerpiece, welcoming visitors to explore all galleries, solve clues, and discover secrets across the museum.</span>
@@ -62,13 +62,16 @@ export const MuseumInfoModal:React.FC<{point:MuseumInfoPoint;onClose:()=>void}>=
             </>
           ) : (
             <>
-              <p className="museum-modal__copy">Place your brand inside the AT30 Museum through reception media, an interactive exhibit, or a dedicated gallery partnership.</p>
+              <p className="museum-modal__copy">Place your brand inside the Any30 Museum through reception digital signage, an interactive exhibit, or sponsor a hidden gift.</p>
               <div className="museum-modal__summary">
                 <div className="museum-modal__summary-row"><span>Partnership contact</span><strong>+1 409 422 9714</strong></div>
-                <div className="museum-modal__note"><span>Send a WhatsApp message to discuss advertising availability, campaign ideas, or a museum partnership.</span></div>
+                <div className="museum-modal__note"><span>Apply on our Partners Hub or send a direct message to discuss digital signage availability, rates, or sponsoring a hidden gift.</span></div>
               </div>
-              <a className="museum-button museum-button--whatsapp" href="https://wa.me/14094229714?text=Hello%20AT30%2C%20I%27m%20interested%20in%20advertising%20or%20a%20museum%20partnership." target="_blank" rel="noopener noreferrer"><WhatsAppIcon />Message AT30 on WhatsApp</a>
-              <button className="museum-button" onClick={close}>Continue exploring</button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+                <a className="museum-button museum-button--primary" href="/partners" target="_blank" rel="noopener noreferrer">Open /partners Hub &amp; Inventory</a>
+                <a className="museum-button museum-button--whatsapp" href="https://wa.me/14094229714?text=Hello%20Any30%2C%20I%27m%20interested%20in%20advertising%20or%20sponsoring%20a%20gift%20in%20the%20museum." target="_blank" rel="noopener noreferrer"><WhatsAppIcon />Message on WhatsApp</a>
+              </div>
+              <button className="museum-button" onClick={close} style={{ marginTop: '8px' }}>Continue exploring</button>
             </>
           )}
         </div>

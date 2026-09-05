@@ -312,7 +312,7 @@ export class CharacterModelLoader {
     chestButton.position.set(0, -0.08, 0.135);
     chestBone.add(chestButton);
 
-    // Left Breast Pocket & "AT30 / CURATOR VANCE" ID Badge
+    // Left Breast Pocket & "Any30 / CURATOR VANCE" ID Badge
     const pocketGeo = new THREE.BoxGeometry(0.085, 0.012, 0.008);
     const pocket = mkMesh(pocketGeo, suitMat);
     pocket.position.set(-0.115, 0.055, 0.134);

@@ -245,7 +245,7 @@ class TelemetryEngine {
     if (x > 10) {
       if (x < 28) return 'east_lobby';
       if (x < 48) return 'east_gallery';
-      return 'east_sanctum'; // PosterBooking
+      return 'east_sanctum'; // RipplePOS
     }
     if (z < -10) {
       if (z > -28) return 'north_lobby';
@@ -255,16 +255,16 @@ class TelemetryEngine {
     if (x < -10) {
       if (x > -28) return 'west_lobby';
       if (x > -48) return 'west_gallery';
-      return 'west_sanctum'; // LeadMagic
+      return 'west_sanctum'; // FiledCrews
     }
     if (z > 10) return 'south_portal';
     return 'atrium';
   }
 
   private getBrandFromRoom(roomId: string): string | null {
-    if (roomId.startsWith('east_')) return 'posterbooking';
+    if (roomId.startsWith('east_')) return 'ripplepos';
     if (roomId.startsWith('north_')) return 'clayrent';
-    if (roomId.startsWith('west_')) return 'leadmagic';
+    if (roomId.startsWith('west_')) return 'filedcrews';
     return null;
   }
 

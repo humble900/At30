@@ -1,12 +1,20 @@
 {
-  "name": "AT30 — Multiplayer Events & Games",
-  "short_name": "AT30",
-  "description": "Seasonal multiplayer events, games, and hosted company experiences in your browser.",
+  "name": "Any30 — Playable Museum of Gifts & Multiplayer Worlds",
+  "short_name": "Any30",
+  "description": "Explore 3D multiplayer galleries directly in your browser. Inspect interactive exhibits, solve hidden clues, and discover real brand gifts.",
   "start_url": "/",
   "scope": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "any",
-  "background_color": "#101310",
+  "background_color": "#f4f4ed",
   "theme_color": "#101310",
-  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "categories": ["games", "entertainment", "shopping"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

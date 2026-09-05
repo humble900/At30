@@ -302,7 +302,7 @@ export class TextureGenerator {
     ctx.fillStyle = '#171A17';
     ctx.font = '700 16px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('AT30 PARTNERS', 164, 95);
+    ctx.fillText('Any30 PARTNERS', 164, 95);
     ctx.textAlign = 'left';
     ctx.fillStyle = '#F4F5F1';
     ctx.font = '700 74px Inter, sans-serif';
@@ -328,6 +328,67 @@ export class TextureGenerator {
     ctx.beginPath();
     ctx.arc(912, 444, 15, .45, 4.75);
     ctx.stroke();
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }
+
+  public static createReceptionDemoAdTexture(brand: 'clayrent' | 'filedcrews'): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 576;
+    const ctx = canvas.getContext('2d')!;
+
+    const isClayRent = brand === 'clayrent';
+    const accent = isClayRent ? '#E06D53' : '#A855F7';
+    const header = isClayRent ? 'FEATURED PARTNER AD · CLAYRENT' : 'FEATURED PARTNER AD · FILEDCREWS';
+    const title = isClayRent ? 'Modern Habitat Rentals' : 'Field Operations Fleet';
+    const subtitle = isClayRent ? 'Curated Luxury Living & Smart Asset Booking' : 'Real-Time Crew Route & Task Dispatch Platform';
+    const perk = isClayRent ? '$100 Booking Voucher inside Museum' : '30% Off Operations Pass inside Museum';
+
+    ctx.fillStyle = '#0F121A';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 6;
+    ctx.strokeRect(18, 18, 988, 540);
+
+    // Pill badge
+    ctx.fillStyle = accent;
+    ctx.fillRect(50, 50, 360, 38);
+    ctx.fillStyle = '#0F121A';
+    ctx.font = '800 16px Inter, sans-serif';
+    ctx.fillText(header, 65, 75);
+
+    // Title
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '800 58px Inter, sans-serif';
+    ctx.fillText(title, 50, 180);
+
+    // Subtitle
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '500 24px Inter, sans-serif';
+    ctx.fillText(subtitle, 50, 235);
+
+    // Perk Box
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.fillRect(50, 280, 924, 100);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(50, 280, 924, 100);
+
+    ctx.fillStyle = accent;
+    ctx.font = '700 16px "DM Mono", monospace';
+    ctx.fillText('DISCOVERABLE VOUCHER IN EXHIBIT', 75, 315);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '800 28px Inter, sans-serif';
+    ctx.fillText(perk, 75, 355);
+
+    // Footer note
+    ctx.fillStyle = '#64748B';
+    ctx.font = '500 18px Inter, sans-serif';
+    ctx.fillText('Demo Signage Ad Slot · Book your brand placement at /partners', 50, 480);
+
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
@@ -432,7 +493,7 @@ export class TextureGenerator {
     // Museum provenance line in refined slate
     ctx.fillStyle = '#64748B';
     ctx.font = '11px Inter, sans-serif';
-    ctx.fillText('At30 Virtual Pavilion • Curated Fine Art Collection', 22, 104);
+    ctx.fillText('Any30 Virtual Pavilion • Curated Fine Art Collection', 22, 104);
 
     ctx.textAlign = 'left';
     return new THREE.CanvasTexture(canvas);
@@ -440,8 +501,8 @@ export class TextureGenerator {
 
   // ─── DIGITAL SIGNAGE SCREEN TEXTURES (Real Art Exhibition Mode) ──
 
-  /** PosterBooking Digital Screen — Master Digital Art Exhibition */
-  public static createPosterBookingScreenTexture(variant: 'master' | 'menu' = 'master'): THREE.CanvasTexture {
+  /** RipplePOS Digital Screen — Master Point of Sale & Art Exhibition */
+  public static createRipplePOSScreenTexture(variant: 'master' | 'menu' = 'master'): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 576;
@@ -463,11 +524,11 @@ export class TextureGenerator {
 
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '900 24px Inter, sans-serif';
-      ctx.fillText('POSTERBOOKING', 30, 36);
+      ctx.fillText('RIPPLEPOS', 30, 36);
 
       ctx.fillStyle = '#00F0FF';
       ctx.font = 'bold 13px Inter, sans-serif';
-      ctx.fillText('● LIVE 8K ART BROADCAST #PB-884', 680, 36);
+      ctx.fillText('● LIVE POS & MENU BROADCAST #RP-884', 680, 36);
 
       // LEFT: Fine Art Frame (Vincent van Gogh - Starry Night)
       const artX = 30, artY = 70, artW = 540, artH = 430;
@@ -478,44 +539,12 @@ export class TextureGenerator {
       ctx.roundRect(artX, artY, artW, artH, 16);
       ctx.fill();
 
-      // Art info badge on screen
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.roundRect(artX + 20, artY + artH - 70, artW - 40, 50, 10);
-      ctx.fill();
-
-      ctx.fillStyle = '#FFD166';
-      ctx.font = 'bold 14px "Playfair Display", Georgia, serif';
-      ctx.fillText('The Starry Night (1889)', artX + 35, artY + artH - 42);
-
-      ctx.fillStyle = '#E2E8F0';
-      ctx.font = '12px Inter, sans-serif';
-      ctx.fillText('Vincent van Gogh • MoMA Collection', artX + 35, artY + artH - 24);
-
-      // RIGHT TOP: Live Widget Schedule
-      const r1X = 590, r1Y = 70, r1W = 404, r1H = 200;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = 1.5;
-      ctx.roundRect(r1X, r1Y, r1W, r1H, 16);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#00F0FF';
-      ctx.font = '900 16px Inter, sans-serif';
-      ctx.fillText('SMART DISPLAY ORCHESTRATION', r1X + 20, r1Y + 36);
-
-      ctx.fillStyle = '#E2E8F0';
-      ctx.font = '13px Inter, sans-serif';
-      ctx.fillText('• 09:00 AM — Louvre Masterpieces Exhibition', r1X + 20, r1Y + 70);
-      ctx.fillText('• 01:00 PM — Impressionist Garden Rotations', r1X + 20, r1Y + 100);
-      ctx.fillText('• 05:00 PM — Gourmet Bistro Dinner Menu', r1X + 20, r1Y + 130);
-      ctx.fillText('• 08:00 PM — Modernist Abstract Visuals', r1X + 20, r1Y + 160);
-
-      // RIGHT BOTTOM: Scavenger Clue Box
-      const r2X = 590, r2Y = 290, r2W = 404, r2H = 210;
+      // RIGHT: Interactive Display & Promo Widget
+      const r2X = 600, r2Y = 80, r2W = 390, r2H = 220;
       ctx.fillStyle = 'rgba(0, 240, 255, 0.08)';
       ctx.strokeStyle = '#00F0FF';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
       ctx.roundRect(r2X, r2Y, r2W, r2H, 16);
       ctx.fill();
       ctx.stroke();
@@ -526,12 +555,12 @@ export class TextureGenerator {
 
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 22px monospace';
-      ctx.fillText('POSTERBOOKING30', r2X + 20, r2Y + 76);
+      ctx.fillText('RIPPLEPOS30', r2X + 20, r2Y + 76);
 
       ctx.fillStyle = '#94A3B8';
       ctx.font = '12px Inter, sans-serif';
-      ctx.fillText('30% Off All Annual Pro Screens', r2X + 20, r2Y + 108);
-      ctx.fillText('+ 3 Free Screens Forever on Any TV / Device', r2X + 20, r2Y + 130);
+      ctx.fillText('30% Off All Annual POS Hardware', r2X + 20, r2Y + 108);
+      ctx.fillText('+ 3 Months Free Cloud POS on Any Screen', r2X + 20, r2Y + 130);
 
       ctx.fillStyle = '#38BDF8';
       ctx.font = 'bold 12px Inter, sans-serif';
@@ -543,7 +572,7 @@ export class TextureGenerator {
 
       ctx.fillStyle = '#00F0FF';
       ctx.font = 'bold 14px Inter, sans-serif';
-      ctx.fillText('POSTERBOOKING.COM ── TURN ANY FIRESTICK, RASPBERRY PI OR TV INTO A SMART DIGITAL SIGN IN 60 SECONDS ──', 30, 554);
+      ctx.fillText('RIPPLEPOS.COM ── SMART POINT OF SALE, DIGITAL MENUS & CHECKOUT REGISTERS ──', 30, 554);
 
       const texture = new THREE.CanvasTexture(canvas);
 
@@ -579,7 +608,7 @@ export class TextureGenerator {
 
       ctx.fillStyle = '#E06D53';
       ctx.font = 'bold 14px Inter, sans-serif';
-      ctx.fillText('POWERED BY POSTERBOOKING DIGITAL SIGNAGE CLOUD', 550, 48);
+      ctx.fillText('POWERED BY RIPPLEPOS CLOUD REGISTER & DIGITAL MENUS', 510, 48);
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.roundRect(40, 80, 450, 420, 16); ctx.fill();
@@ -623,17 +652,17 @@ export class TextureGenerator {
 
       ctx.fillStyle = '#D4AF37';
       ctx.font = 'bold 15px Inter, sans-serif';
-      ctx.fillText('🔑 SCAVENGER CODE: POSTERBOOKING30', 560, 390);
+      ctx.fillText('🔑 SCAVENGER CODE: RIPPLEPOS30', 560, 390);
       ctx.fillStyle = '#E2E8F0';
       ctx.font = '12px Inter, sans-serif';
-      ctx.fillText('Claim 30% discount on PosterBooking annual plans.', 560, 420);
+      ctx.fillText('Claim 30% discount on RipplePOS annual hardware & plans.', 560, 420);
       ctx.fillText('Inspect exhibit to save voucher.', 560, 445);
 
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 520, 1024, 56);
       ctx.fillStyle = '#D4AF37';
       ctx.font = 'bold 14px Inter, sans-serif';
-      ctx.fillText('POSTERBOOKING DIGITAL MENUS ── UPDATE PRICES & DISHES INSTANTLY ACROSS ALL BRANCHES ──', 30, 554);
+      ctx.fillText('RIPPLEPOS DIGITAL MENUS ── UPDATE PRICES & DISHES INSTANTLY ACROSS ALL BRANCHES ──', 30, 554);
 
       return new THREE.CanvasTexture(canvas);
     }
@@ -694,8 +723,8 @@ export class TextureGenerator {
     return new THREE.CanvasTexture(canvas);
   }
 
-  /** LeadMagic AI Data Intelligence */
-  public static createLeadMagicTexture(): THREE.CanvasTexture {
+  /** FiledCrews Field Operations & Workforce Management */
+  public static createFiledCrewsTexture(): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 1024;
@@ -724,23 +753,23 @@ export class TextureGenerator {
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 44px Inter, sans-serif';
-    ctx.fillText('LEADMAGIC', 60, 90);
+    ctx.fillText('FILEDCREWS', 60, 90);
 
     ctx.fillStyle = '#A855F7';
     ctx.font = 'bold 22px Inter, sans-serif';
-    ctx.fillText('B2B IP REVEAL & AI CONTACT ENRICHMENT', 60, 130);
+    ctx.fillText('FIELD OPERATIONS & WORKFORCE DISPATCH', 60, 130);
 
     ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
     ctx.roundRect(60, 170, 420, 80, 12); ctx.fill();
     ctx.fillStyle = '#38BDF8';
     ctx.font = 'bold 28px Inter, sans-serif';
-    ctx.fillText('98.4% Deliverability', 80, 215);
+    ctx.fillText('Real-Time Dispatch', 80, 215);
 
     ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
     ctx.roundRect(520, 170, 440, 80, 12); ctx.fill();
     ctx.fillStyle = '#F472B6';
     ctx.font = 'bold 28px Inter, sans-serif';
-    ctx.fillText('10x Pipeline Velocity', 540, 215);
+    ctx.fillText('10x Crew Efficiency', 540, 215);
 
     ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
     ctx.strokeStyle = '#A855F7';
@@ -749,12 +778,16 @@ export class TextureGenerator {
 
     ctx.fillStyle = '#E9D5FF';
     ctx.font = 'bold 20px Inter, sans-serif';
-    ctx.fillText('🔮 AI VAULT PROMO UNLOCKED', 340, 880);
+    ctx.fillText('⚡ FILEDCREWS PROMO UNLOCKED', 320, 880);
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 28px monospace';
-    ctx.fillText('CODE: LEADMAGICVIP', 360, 925);
+    ctx.fillText('CODE: FILEDCREWS30', 360, 925);
 
     return new THREE.CanvasTexture(canvas);
+  }
+
+  public static createLeadMagicTexture(): THREE.CanvasTexture {
+    return TextureGenerator.createFiledCrewsTexture();
   }
 
   // ─── SIGNAGE TEXTURES ───────────────────────────────────────
@@ -786,8 +819,8 @@ export class TextureGenerator {
     return new THREE.CanvasTexture(canvas);
   }
 
-  /** Centerpiece At30 Emblem */
-  public static createAt30LogoTexture(): THREE.CanvasTexture {
+  /** Centerpiece Any30 Emblem */
+  public static createAny30LogoTexture(): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 512;
@@ -807,9 +840,9 @@ export class TextureGenerator {
     ctx.stroke();
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 130px Inter, sans-serif';
+    ctx.font = '900 120px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('At30', 256, 290);
+    ctx.fillText('Any30', 256, 290);
 
     ctx.fillStyle = '#00F0FF';
     ctx.font = 'bold 22px Inter, sans-serif';
@@ -1123,8 +1156,8 @@ export class TextureGenerator {
   }
 
   /**
-   * High-definition "AT30 / Curator Vance" metallic pocket name badge
-   * Features brushed titanium background, AT30 logo glyph, and executive typography.
+   * High-definition "Any30 / Curator Vance" metallic pocket name badge
+   * Features brushed titanium background, Any30 logo glyph, and executive typography.
    */
   public static createCuratorBadgeTexture(): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
@@ -1152,10 +1185,10 @@ export class TextureGenerator {
     ctx.roundRect(10, 10, 236, 76, 6);
     ctx.fill();
 
-    // AT30 Cyan Logo Icon
+    // Any30 Cyan Logo Icon
     ctx.fillStyle = '#00F0FF';
-    ctx.font = 'bold 24px Inter, sans-serif';
-    ctx.fillText('AT30', 22, 42);
+    ctx.font = 'bold 20px Inter, sans-serif';
+    ctx.fillText('Any30', 22, 42);
 
     // Curator Vance text
     ctx.fillStyle = '#F9FAFB';

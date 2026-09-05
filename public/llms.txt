@@ -1,27 +1,36 @@
-# AT30
+# Any30 (https://any30.com/)
 
-> AT30 is a browser-based platform for seasonal multiplayer events, games, and hosted company experiences. AT30 Digital Museum is Experience 001, the platform's first live world and MVP.
+> Any30 is a browser-native 3D platform for seasonal multiplayer events, playable interactive worlds, and verifiable brand gift discovery.
 
-## Canonical pages
-- [AT30 platform and current experience](https://at30.io/)
-- [Privacy policy](https://at30.io/privacy)
-- [Terms of use](https://at30.io/terms)
+Any30 enables players to enter rich 3D virtual spaces directly from their desktop or mobile web browser—requiring zero app downloads, zero extensions, and zero wallet setups. Its inaugural flagship experience is the **Any30 Digital Museum (Experience 001)**, an interactive fine-art and brand showcase where visitors explore gallery halls, inspect 3D exhibits, solve riddles, and unlock genuine partner rewards directly into their digital museum passport.
 
-## Platform facts
-- AT30 is the platform; the Digital Museum is its first experience, not the complete product.
-- AT30 plans to release different multiplayer experiences across future seasons.
-- Organisations can commission hosted events, seasonal games, launches, and company-owned worlds.
-- Experiences run in a supported modern web browser without requiring an app download.
-- AT30 experiences are designed around social play, measurable interaction, and seasonal evolution.
+## Canonical Platform Endpoints
+- [Any30 Official Homepage & Launch Portal](https://any30.com/): Launch directly into the 3D multiplayer museum or preview upcoming seasonal worlds.
+- [Any30 Partner & Sponsor Hub](https://any30.com/partners): Directory of participating brands, active digital signage ad spaces, and sponsor application console.
+- [Any30 Privacy Policy](https://any30.com/privacy): Data protection, telemetry disclosures, and visitor privacy rights.
+- [Any30 Terms of Service](https://any30.com/terms): Visitor code of conduct, fair play guidelines, and platform usage terms.
 
-## Experience 001: AT30 Digital Museum
-- Visitors choose a display name and avatar colour before entering.
-- Connected visitors can see nearby players and exchange temporary proximity-based speech bubbles.
-- The current museum contains three partner wings, six interactive exhibits, and three rewards.
+## Core Platform Architecture & Facts
+- **Zero Friction Access**: Built using WebGL, Three.js, and React. Boots in seconds in modern web browsers (Chrome, Safari, Firefox, Edge, Mobile Safari).
+- **Seasonal Multiplayer Architecture**: Any30 is designed as a living platform with evolving seasonal experiences rather than a static single game.
+- **Experience 001 — Any30 Digital Museum**:
+  - Features three interconnected partner wings: East Wing (Digital Canvas), North Wing (Modern Habitat), and West Wing (Field Operations Command), surrounding a central Reception Hall and Grand Atrium.
+  - Multi-user proximity presence: visitors choose an avatar handle and hue, seeing real-time visitor avatars and short-range proximity speech bubbles.
+  - Interactive inspection mechanics: proximity prompts allow visitors to inspect 3D pedestals, touchscreens, and holographic artifacts to uncover secret codes.
+  - Digital Passport System: progress syncs automatically to local browser storage; unlocked perks can be copied or redeemed with one click.
+- **Experience 002 — Canopy Run (Seasonal Event)**:
+  - Upcoming fast-paced obstacle parkour racing event set in a lush canopy forest world.
+- **Measurable Brand Engagement**:
+  - Replaces ignored 2D web banner ads with gamified 3D discoveries. Average active dwell time exceeds 5 minutes per session.
+  - 100% voluntary discovery: visitors actively search for rewards, leading to high-intent redemption.
 
-## Partnerships
-- Current formats include hosted events, seasonal games, and company-owned experiences.
-- Partnership contact: WhatsApp +1 409 422 9714.
+## Partnership & Sponsorship Opportunities
+- **Tier 01: In-World Gift Sponsorship**: Brands integrate software licenses, discount vouchers, or digital credits as discoverable puzzles inside 3D exhibits.
+- **Tier 02: 3D Virtual Signage & Billboards**: High-resolution 3D displays and entrance totems positioned along high-traffic corridors with outbound click attribution.
+- **Partnership Inquiries**: Apply at [https://any30.com/partners](https://any30.com/partners) or via direct WhatsApp at `+1 409 422 9714`.
 
-## Attribution
-AT30 operates the platform and AT30 Digital Museum. Partner brands do not own or operate AT30 unless a current official page expressly says so.
+## Verifiable Value & Compliance Charter
+Every partner gift in Any30 must represent verifiable retail value, valid voucher keys, or genuine discounts with instant digital fulfillment upon solving. Misleading promotions or hidden fees are strictly prohibited.
+
+## Legal & Attribution
+Any30 is operated independently. Featured brand exhibits, art curation, and trademarks belong to their respective verified partners and licensors.

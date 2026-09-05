@@ -17,10 +17,18 @@ export interface BoundingBox2D {
 export interface ArtworkPlacement {
   item: MasterpieceArt;
   position: [number, number];
+  faceDir: 'north' | 'south' | 'east' | 'west';
+}
+
+export interface WallOccluder {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
 }
 
 export interface MuseumInfoPoint {
-  id: 'visitor-guide' | 'advertise' | 'reception-artifact';
+  id: 'visitor-guide' | 'advertise' | 'reception-artifact' | 'ad-clayrent' | 'ad-filedcrews';
   kind: 'guide' | 'partnership' | 'artifact';
   title: string;
   position: [number, number];
@@ -53,6 +61,7 @@ export class MuseumScene {
   public artworks: ArtworkPlacement[] = [];
   public infoPoints: MuseumInfoPoint[] = [];
   public collisionBoxes: BoundingBox2D[] = [];
+  public wallOccluders: WallOccluder[] = [];
   public animatedObjects: { mesh: THREE.Object3D; update: (time: number) => void }[] = [];
 
   // Materials (shared)
@@ -77,9 +86,9 @@ export class MuseumScene {
     this.buildFloor();
     this.buildAtrium();
     this.buildAtriumCenterpiece();
-    this.buildEastWing();  // PosterBooking
-    this.buildNorthWing(); // ClayRent
-    this.buildWestWing();  // LeadMagic
+    this.buildEastWing();  // Digital Canvas Wing (RipplePOS)
+    this.buildNorthWing(); // Modern Habitat Pavilion
+    this.buildWestWing();  // Field Operations Vault
     this.buildSouthEntrance();
     this.buildReceptionGuide();
     this.buildReceptionArtifact();
@@ -127,6 +136,70 @@ export class MuseumScene {
       maxZ: z + d / 2 + 0.3,
       topY: h
     });
+
+    this.wallOccluders.push({
+      minX: x - w / 2,
+      maxX: x + w / 2,
+      minZ: z - d / 2,
+      maxZ: z + d / 2
+    });
+  }
+
+  /**
+   * Check if direct line-of-sight between two 2D points is clear of museum walls.
+   * Prevents interaction prompts from showing through walls and into adjacent rooms.
+   */
+  public hasLineOfSight(p1x: number, p1z: number, p2x: number, p2z: number): boolean {
+    const dx = p2x - p1x;
+    const dz = p2z - p1z;
+    const distSq = dx * dx + dz * dz;
+    if (distSq < 0.0001) return true;
+
+    for (const wall of this.wallOccluders) {
+      // Inset wall box slightly (4cm) so targets mounted right against the wall face don't self-occlude
+      const bMinX = wall.minX + 0.04;
+      const bMaxX = wall.maxX - 0.04;
+      const bMinZ = wall.minZ + 0.04;
+      const bMaxZ = wall.maxZ - 0.04;
+
+      if (bMinX >= bMaxX || bMinZ >= bMaxZ) continue;
+
+      let tmin = 0;
+      let tmax = 1;
+
+      // X slab
+      if (Math.abs(dx) < 1e-7) {
+        if (p1x < bMinX || p1x > bMaxX) continue;
+      } else {
+        const ood = 1.0 / dx;
+        let t1 = (bMinX - p1x) * ood;
+        let t2 = (bMaxX - p1x) * ood;
+        if (t1 > t2) { const tmp = t1; t1 = t2; t2 = tmp; }
+        tmin = Math.max(tmin, t1);
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) continue;
+      }
+
+      // Z slab
+      if (Math.abs(dz) < 1e-7) {
+        if (p1z < bMinZ || p1z > bMaxZ) continue;
+      } else {
+        const ood = 1.0 / dz;
+        let t1 = (bMinZ - p1z) * ood;
+        let t2 = (bMaxZ - p1z) * ood;
+        if (t1 > t2) { const tmp = t1; t1 = t2; t2 = tmp; }
+        tmin = Math.max(tmin, t1);
+        tmax = Math.min(tmax, t2);
+        if (tmin > tmax) continue;
+      }
+
+      // If the intersection segment is between the player (t=0) and target (t=1), a wall blocks LOS!
+      if (tmin < 0.95 && tmax > 0.05) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /** Add baseboard strip along a wall */
@@ -237,16 +310,26 @@ export class MuseumScene {
     group.add(frame);
 
     // Canvas
-    const canvasMat = new THREE.MeshBasicMaterial({ map: paintingTex });
+    const canvasMat = new THREE.MeshBasicMaterial({
+      map: paintingTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const artCanvas = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), canvasMat);
-    artCanvas.position.z = 0.045;
+    artCanvas.position.z = 0.055;
     group.add(artCanvas);
 
     // Info plaque
     const labelTex = TextureGenerator.createGalleryLabelTexture(labelTitle, labelDesc);
-    const labelMat = new THREE.MeshBasicMaterial({ map: labelTex });
+    const labelMat = new THREE.MeshBasicMaterial({
+      map: labelTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const label = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), labelMat);
-    label.position.set(0, -(frameH / 2 + 0.35), 0.045);
+    label.position.set(0, -(frameH / 2 + 0.35), 0.055);
     group.add(label);
 
     // Position and orient
@@ -267,31 +350,49 @@ export class MuseumScene {
     this.scene.add(group);
     const artworkIndex = paintingTex.userData.artworkIndex;
     if (typeof artworkIndex === 'number' && ONLINE_MASTERPIECES[artworkIndex]) {
-      this.artworks.push({ item: ONLINE_MASTERPIECES[artworkIndex], position: [x, z] });
+      this.artworks.push({ item: ONLINE_MASTERPIECES[artworkIndex], position: [x, z], faceDir });
     }
   }
 
   /** Add arch/banner signage over a doorway */
-  private addDoorwaySign(title: string, subtitle: string, color: string, x: number, z: number, rotY: number) {
+  private addDoorwaySign(title: string, subtitle: string, color: string, x: number, z: number, rotY: number, doorWidth: number = 4.6) {
+    const signGroup = new THREE.Group();
+    signGroup.position.set(x, WALL_H - 1.25, z);
+    signGroup.rotation.y = rotY;
+
+    // Solid backing board to prevent see-through and wall-intersection clipping
+    const backingMat = new THREE.MeshStandardMaterial({
+      color: 0x0C0E14,
+      metalness: 0.8,
+      roughness: 0.25
+    });
+    const backing = new THREE.Mesh(new THREE.BoxGeometry(doorWidth - 0.2, 1.3, 0.1), backingMat);
+    signGroup.add(backing);
+
     const bannerTex = TextureGenerator.createArchBannerTexture(title, subtitle, color);
-    const bannerMat = new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true });
-    const banner = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.5), bannerMat);
-    banner.position.set(x, WALL_H - 1.2, z);
-    banner.rotation.y = rotY;
-    this.scene.add(banner);
+    const bannerMat = new THREE.MeshBasicMaterial({
+      map: bannerTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
+    const banner = new THREE.Mesh(new THREE.PlaneGeometry(doorWidth - 0.35, 1.15), bannerMat);
+    banner.position.z = 0.055;
+    signGroup.add(banner);
 
     // Glowing header beam
     const headerMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(color),
       emissive: new THREE.Color(color),
-      emissiveIntensity: 0.4,
-      metalness: 0.5,
+      emissiveIntensity: 0.45,
+      metalness: 0.6,
       roughness: 0.2
     });
-    const header = new THREE.Mesh(new THREE.BoxGeometry(8, 0.2, 0.6), headerMat);
-    header.position.set(x, WALL_H - 0.1, z);
-    header.rotation.y = rotY;
-    this.scene.add(header);
+    const header = new THREE.Mesh(new THREE.BoxGeometry(doorWidth, 0.16, 0.32), headerMat);
+    header.position.y = 0.72;
+    signGroup.add(header);
+
+    this.scene.add(signGroup);
   }
 
   // ─── LIGHTING ──────────────────────────────────────────────────
@@ -361,15 +462,20 @@ export class MuseumScene {
     // Welcome sign with live explorers count
     const museumPlays = visitorStats.getStats().museumPlays;
     const welcomeTex = TextureGenerator.createWelcomeWallTexture(
-      'At30 Pavilion',
+      'Any30 Pavilion',
       'Where Innovation Meets Discovery',
       '#00F0FF',
       `${museumPlays.toLocaleString()} Explorers Played`
     );
-    const welcomeMat = new THREE.MeshBasicMaterial({ map: welcomeTex });
+    const welcomeMat = new THREE.MeshBasicMaterial({
+      map: welcomeTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const welcomeSign = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.25), welcomeMat);
 
-    welcomeSign.position.set(0, 2.5, ATRIUM_HALF + entranceLen - 0.3);
+    welcomeSign.position.set(0, 2.5, ATRIUM_HALF + entranceLen - 0.32);
     welcomeSign.rotation.y = Math.PI;
     this.scene.add(welcomeSign);
 
@@ -384,12 +490,17 @@ export class MuseumScene {
 
     const adScreen = new THREE.Mesh(
       new THREE.PlaneGeometry(4.55, 2.72),
-      new THREE.MeshBasicMaterial({ map: TextureGenerator.createAdvertisingScreenTexture() })
+      new THREE.MeshBasicMaterial({
+        map: TextureGenerator.createAdvertisingScreenTexture(),
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
+      })
     );
-    adScreen.position.set(-doorW / 2 + 0.39, 2.45, ATRIUM_HALF + entranceLen / 2);
+    adScreen.position.set(-doorW / 2 + 0.42, 2.45, ATRIUM_HALF + entranceLen / 2);
     adScreen.rotation.y = Math.PI / 2;
     this.scene.add(adScreen);
-    this.infoPoints.push({ id: 'advertise', kind: 'partnership', title: 'Advertise in the AT30 Museum', position: [-doorW / 2 + 0.4, ATRIUM_HALF + entranceLen / 2] });
+    this.infoPoints.push({ id: 'advertise', kind: 'partnership', title: 'Advertise in the Any30 Museum', position: [-doorW / 2 + 0.4, ATRIUM_HALF + entranceLen / 2] });
 
     this.addCeiling(doorW, entranceLen, 0, ATRIUM_HALF + entranceLen / 2, CORRIDOR_CEIL);
     this.addRunner(2.5, entranceLen, 0, ATRIUM_HALF + entranceLen / 2);
@@ -635,42 +746,68 @@ export class MuseumScene {
     // North wall (opening to ClayRent corridor)
     this.addWall(sideW, WALL_H, WALL_THICK, -(doorW / 2 + sideW / 2), WALL_H / 2, -ATRIUM_HALF);
     this.addWall(sideW, WALL_H, WALL_THICK, (doorW / 2 + sideW / 2), WALL_H / 2, -ATRIUM_HALF);
-    this.addDoorwaySign('ClayRent Pavilion', 'Modern Habitat & Asset Gallery ▲', '#E06D53', 0, -ATRIUM_HALF, 0);
+    this.addDoorwaySign('ClayRent Pavilion', 'Modern Habitat & Asset Gallery ▲', '#E06D53', 0, -ATRIUM_HALF + 0.16, 0, 4.8);
     this.addColumnPair(0, -ATRIUM_HALF, doorW);
 
-    // Primary partnership display on the wall directly ahead of arriving visitors.
-    const frontAdFrame = new THREE.Mesh(
+    // Reception Demo Sign 1: ClayRent (Left of North entrance)
+    const clayRentAdFrame = new THREE.Mesh(
       new THREE.BoxGeometry(6.5, 3.65, 0.18),
       new THREE.MeshStandardMaterial({ color: 0x171A17, metalness: 0.72, roughness: 0.25 })
     );
-    frontAdFrame.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.28);
-    frontAdFrame.castShadow = true;
-    this.scene.add(frontAdFrame);
-    const frontAdScreen = new THREE.Mesh(
+    clayRentAdFrame.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.28);
+    clayRentAdFrame.castShadow = true;
+    this.scene.add(clayRentAdFrame);
+    const clayRentAdScreen = new THREE.Mesh(
       new THREE.PlaneGeometry(6.15, 3.35),
-      new THREE.MeshBasicMaterial({ map: TextureGenerator.createAdvertisingScreenTexture() })
+      new THREE.MeshBasicMaterial({
+        map: TextureGenerator.createReceptionDemoAdTexture('clayrent'),
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
+      })
     );
-    frontAdScreen.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.39);
-    this.scene.add(frontAdScreen);
-    this.infoPoints.push({ id: 'advertise', kind: 'partnership', title: 'Advertise in the AT30 Museum', position: [-6.2, -8.2] });
+    clayRentAdScreen.position.set(-6.2, 2.65, -ATRIUM_HALF + 0.42);
+    this.scene.add(clayRentAdScreen);
+    this.infoPoints.push({ id: 'ad-clayrent', kind: 'partnership', title: 'ClayRent Demo Ad · Modern Habitats', position: [-6.2, -8.2] });
 
-    // East wall (opening to PosterBooking corridor)
+    // Reception Demo Sign 2: FiledCrews (Right of North entrance)
+    const filedCrewsAdFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(6.5, 3.65, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x171A17, metalness: 0.72, roughness: 0.25 })
+    );
+    filedCrewsAdFrame.position.set(6.2, 2.65, -ATRIUM_HALF + 0.28);
+    filedCrewsAdFrame.castShadow = true;
+    this.scene.add(filedCrewsAdFrame);
+    const filedCrewsAdScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(6.15, 3.35),
+      new THREE.MeshBasicMaterial({
+        map: TextureGenerator.createReceptionDemoAdTexture('filedcrews'),
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
+      })
+    );
+    filedCrewsAdScreen.position.set(6.2, 2.65, -ATRIUM_HALF + 0.42);
+    this.scene.add(filedCrewsAdScreen);
+    this.infoPoints.push({ id: 'ad-filedcrews', kind: 'partnership', title: 'FiledCrews Demo Ad · Field Workforce', position: [6.2, -8.2] });
+
+    // East wall (opening to Digital Canvas corridor)
     this.addWall(WALL_THICK, WALL_H, sideW, ATRIUM_HALF, WALL_H / 2, -(doorW / 2 + sideW / 2));
     this.addWall(WALL_THICK, WALL_H, sideW, ATRIUM_HALF, WALL_H / 2, (doorW / 2 + sideW / 2));
-    this.addDoorwaySign('PosterBooking Wing', 'The Digital Canvas Gallery ➔', '#0066FF', ATRIUM_HALF, 0, -Math.PI / 2);
+    this.addDoorwaySign('RipplePOS Wing', 'Point of Sale & Dynamic Canvas ➔', '#0066FF', ATRIUM_HALF - 0.16, 0, -Math.PI / 2, 4.8);
     this.addColumnPair(ATRIUM_HALF, 0, doorW, true);
 
-    // West wall (opening to LeadMagic corridor)
+    // West wall (opening to FiledCrews corridor)
     this.addWall(WALL_THICK, WALL_H, sideW, -ATRIUM_HALF, WALL_H / 2, -(doorW / 2 + sideW / 2));
     this.addWall(WALL_THICK, WALL_H, sideW, -ATRIUM_HALF, WALL_H / 2, (doorW / 2 + sideW / 2));
-    this.addDoorwaySign('LeadMagic Vault', '⬅ AI Data Intelligence Matrix', '#A855F7', -ATRIUM_HALF, 0, Math.PI / 2);
+    this.addDoorwaySign('FiledCrews Vault', '⬅ Field Operations & Dispatch Command', '#A855F7', -ATRIUM_HALF + 0.16, 0, Math.PI / 2, 4.8);
     this.addColumnPair(-ATRIUM_HALF, 0, doorW, true);
 
     // Room ambient
     this.addRoomLight(0, 0, 0xE0F0FF, 1.0, 20);
   }
 
-  // ─── EAST WING: POSTERBOOKING ─────────────────────────────────
+  // ─── EAST WING: DIGITAL CANVAS & RIPPLEPOS ────────────────────
   // Layout: Atrium → Corridor → Lobby → Hallway → Gallery → Hallway → Sanctum
   // Extends along +X axis
 
@@ -712,10 +849,15 @@ export class MuseumScene {
     this.addRoomLight(lobbyX, 0, 0xCCDDFF, 1.0, 14);
 
     // Lobby welcome wall
-    const welcomeTex = TextureGenerator.createWelcomeWallTexture('PosterBooking', 'Dynamic 8K Digital Canvas & Signage Gallery', color);
-    const welcomeMat = new THREE.MeshBasicMaterial({ map: welcomeTex });
+    const welcomeTex = TextureGenerator.createWelcomeWallTexture('RipplePOS', 'Point of Sale & Dynamic Menu Signage Gallery', color);
+    const welcomeMat = new THREE.MeshBasicMaterial({
+      map: welcomeTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const welcomeWall = new THREE.Mesh(new THREE.PlaneGeometry(5, 2.8), welcomeMat);
-    welcomeWall.position.set(lobbyX, 2.2, -LOBBY_W / 2 + 0.3);
+    welcomeWall.position.set(lobbyX, 2.2, -LOBBY_W / 2 + 0.32);
     welcomeWall.rotation.y = 0; // faces south
     this.scene.add(welcomeWall);
 
@@ -835,9 +977,14 @@ export class MuseumScene {
     this.addRoomLight(0, lobbyZ, 0xFFE0CC, 1.0, 14);
 
     const crWelcomeTex = TextureGenerator.createWelcomeWallTexture('ClayRent', 'Modern Habitat, Villa Architecture & Assets', color);
-    const crWelcomeMat = new THREE.MeshBasicMaterial({ map: crWelcomeTex });
+    const crWelcomeMat = new THREE.MeshBasicMaterial({
+      map: crWelcomeTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const crWelcome = new THREE.Mesh(new THREE.PlaneGeometry(5, 2.8), crWelcomeMat);
-    crWelcome.position.set(-LOBBY_W / 2 + 0.3, 2.2, lobbyZ);
+    crWelcome.position.set(-LOBBY_W / 2 + 0.32, 2.2, lobbyZ);
     crWelcome.rotation.y = Math.PI / 2;
     this.scene.add(crWelcome);
 
@@ -942,10 +1089,15 @@ export class MuseumScene {
     this.addCeiling(LOBBY_D, LOBBY_W, lobbyX, 0, WALL_H);
     this.addRoomLight(lobbyX, 0, 0xDDCCFF, 1.0, 14);
 
-    const lmWelcomeTex = TextureGenerator.createWelcomeWallTexture('LeadMagic', 'B2B Lead Intelligence, IP Reveal & Graph', color);
-    const lmWelcomeMat = new THREE.MeshBasicMaterial({ map: lmWelcomeTex });
+    const lmWelcomeTex = TextureGenerator.createWelcomeWallTexture('FiledCrews', 'Field Operations, Dispatch & Crew Management', color);
+    const lmWelcomeMat = new THREE.MeshBasicMaterial({
+      map: lmWelcomeTex,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    });
     const lmWelcome = new THREE.Mesh(new THREE.PlaneGeometry(5, 2.8), lmWelcomeMat);
-    lmWelcome.position.set(lobbyX, 2.2, -LOBBY_W / 2 + 0.3);
+    lmWelcome.position.set(lobbyX, 2.2, -LOBBY_W / 2 + 0.32);
     lmWelcome.rotation.y = 0;
     this.scene.add(lmWelcome);
 
@@ -1034,7 +1186,7 @@ export class MuseumScene {
     innerRing.position.y = 0.52;
     centerGroup.add(innerRing);
 
-    const emblemTex = TextureGenerator.createAt30LogoTexture();
+    const emblemTex = TextureGenerator.createAny30LogoTexture();
     const emblemMat = new THREE.MeshBasicMaterial({ map: emblemTex, side: THREE.DoubleSide, transparent: true });
     const emblem = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), emblemMat);
     emblem.position.y = 2.2;
@@ -1080,10 +1232,15 @@ export class MuseumScene {
         frame.castShadow = true;
         meshGroup.add(frame);
 
-        const screenTex = TextureGenerator.createPosterBookingScreenTexture(item.id.includes('menu') ? 'menu' : 'master');
-        const screenMat = new THREE.MeshBasicMaterial({ map: screenTex });
+        const screenTex = TextureGenerator.createRipplePOSScreenTexture(item.id.includes('menu') ? 'menu' : 'master');
+        const screenMat = new THREE.MeshBasicMaterial({
+          map: screenTex,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1
+        });
         const screen = new THREE.Mesh(new THREE.PlaneGeometry(6.0, 3.4), screenMat);
-        screen.position.z = 0.11;
+        screen.position.z = 0.135;
         meshGroup.add(screen);
       } else if (item.type === 'pedestal') {
         const standMat = new THREE.MeshStandardMaterial({ color: 0x221B18, metalness: 0.5, roughness: 0.4 });
@@ -1120,7 +1277,7 @@ export class MuseumScene {
         stand.castShadow = true;
         meshGroup.add(stand);
 
-        const lmTex = TextureGenerator.createLeadMagicTexture();
+        const lmTex = TextureGenerator.createFiledCrewsTexture();
         const lmMat = new THREE.MeshBasicMaterial({ map: lmTex });
         const lmBoard = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), lmMat);
         lmBoard.position.set(0, 1.2, -0.8);
@@ -1151,17 +1308,22 @@ export class MuseumScene {
         // Standard painting
         const canvasTex = item.brandKey === 'clayrent'
           ? TextureGenerator.createClayRentTexture()
-          : item.brandKey === 'leadmagic'
-          ? TextureGenerator.createLeadMagicTexture()
-          : TextureGenerator.createPosterBookingScreenTexture('menu');
+          : (item.brandKey === 'filedcrews' || (item.brandKey as string) === 'leadmagic')
+          ? TextureGenerator.createFiledCrewsTexture()
+          : TextureGenerator.createRipplePOSScreenTexture('menu');
 
         const pFrameMat = new THREE.MeshStandardMaterial({ color: 0x2A241F, metalness: 0.4, roughness: 0.5 });
         const pFrame = new THREE.Mesh(new THREE.BoxGeometry(4.4, 3.4, 0.15), pFrameMat);
         meshGroup.add(pFrame);
 
-        const canvasMat = new THREE.MeshBasicMaterial({ map: canvasTex });
+        const canvasMat = new THREE.MeshBasicMaterial({
+          map: canvasTex,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1
+        });
         const artCanvas = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 3.0), canvasMat);
-        artCanvas.position.z = 0.08;
+        artCanvas.position.z = 0.11;
         meshGroup.add(artCanvas);
       }
 
@@ -1171,11 +1333,15 @@ export class MuseumScene {
       const ringMat = new THREE.MeshBasicMaterial({
         color: new THREE.Color(item.themeColor),
         transparent: true,
-        opacity: 0.6,
-        side: THREE.DoubleSide
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -2,
+        polygonOffsetUnits: -2
       });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.set(0, 0.03 - item.position[1], 1.5);
+      ringMesh.position.set(0, 0.035 - item.position[1], 1.5);
       meshGroup.add(ringMesh);
 
       this.scene.add(meshGroup);
@@ -1187,8 +1353,8 @@ export class MuseumScene {
 
   public update(time: number) {
     this.exhibits.forEach(ex => {
-      const scale = 1 + Math.sin(time * 4) * 0.08;
-      ex.ringMesh.scale.set(scale, scale, 1);
+      // Gentle opacity modulation instead of vertical scaling jitter
+      (ex.ringMesh.material as THREE.MeshBasicMaterial).opacity = 0.45 + Math.sin(time * 2.5) * 0.15;
     });
 
     this.animatedObjects.forEach(obj => {

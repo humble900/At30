@@ -302,7 +302,7 @@ export const CanopyRunExperience: React.FC<CanopyRunExperienceProps> = ({
             <div className="canopy-lobby-top">
               <button className="canopy-back-btn" onClick={onExit}>
                 <ArrowLeft size={18} />
-                <span>Return to AT30</span>
+                <span>Return to Any30</span>
               </button>
               <div className="canopy-badge">
                 <span className="live-pulse" />
@@ -326,7 +326,7 @@ export const CanopyRunExperience: React.FC<CanopyRunExperienceProps> = ({
                 <div className="canopy-prize-ladder-card">
                   <div className="card-header">
                     <Trophy size={20} className="gold-trophy" />
-                    <strong>LeadMagic Prize Season Ladder</strong>
+                    <strong>FiledCrews Prize Season Ladder</strong>
                     <span className="total-pool">$2,000 Total Value</span>
                   </div>
                   <div className="prize-tiers-row">
@@ -334,7 +334,7 @@ export const CanopyRunExperience: React.FC<CanopyRunExperienceProps> = ({
                       <div key={tier.position} className="prize-tier-badge">
                         <span className="tier-pos">#{tier.position}</span>
                         <strong className="tier-amount">${tier.amountUsd.toLocaleString()}</strong>
-                        <span className="tier-desc">LeadMagic Credit</span>
+                        <span className="tier-desc">FiledCrews Credit</span>
                         <span className={`tier-state ${tier.state}`}>
                           {tier.state === 'available' ? 'Available' : 'Pending Review'}
                         </span>
@@ -356,7 +356,7 @@ export const CanopyRunExperience: React.FC<CanopyRunExperienceProps> = ({
                         <span className="mode-pill live">PRIZE ELIGIBLE</span>
                       </div>
                       <strong>Prize Race</strong>
-                      <p>Compete for the provisional $1,000 / $700 / $300 LeadMagic credit prize ladder.</p>
+                      <p>Compete for the provisional $1,000 / $700 / $300 FiledCrews credit prize ladder.</p>
                     </button>
 
                     <button

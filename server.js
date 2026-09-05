@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(url.pathname);
 
-  // Health check for cloud orchestrator / Railway
+  // Health check for any30.com cloud orchestrator
   if (pathname === '/health' || pathname === '/healthz') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     return res.end('OK');
