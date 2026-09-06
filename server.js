@@ -77,6 +77,9 @@ function serveFile(filePath, req, res, extraHeaders = {}) {
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
       'Vary': 'Accept-Encoding',
+      ...extraHeaders
+    };
+
     const acceptEncoding = req.headers['accept-encoding'] || '';
 
     // Handle HEAD requests (essential for Twitterbot, WhatsApp, Facebook crawlers)
