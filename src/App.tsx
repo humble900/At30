@@ -11,10 +11,9 @@ const CanopyRunExperience = React.lazy(() => import('./components/CanopyRunExper
 const LegalPage = React.lazy(() => import('./components/LegalPage').then(m => ({ default: m.LegalPage })));
 const PartnersPage = React.lazy(() => import('./components/PartnersPage').then(m => ({ default: m.PartnersPage })));
 
-// Prefetch helper to download 3D experiences in the idle background
+// Prefetch helper to load 3D museum assets on demand
 export const prefetch3DExperiences = () => {
   void import('./components/MuseumExperience');
-  void import('./components/CanopyRunExperience');
 };
 
 const MuseumApp: React.FC = () => {
@@ -29,14 +28,6 @@ const MuseumApp: React.FC = () => {
   const [avatarColor, setAvatarColor] = useState<string>(() => {
     return localStorage.getItem('at30_avatar_color') || '#00F0FF';
   });
-
-  // Start prefetching 3D engines when user is idle on the landing page
-  useEffect(() => {
-    const idleTimer = window.setTimeout(() => {
-      prefetch3DExperiences();
-    }, 2000);
-    return () => window.clearTimeout(idleTimer);
-  }, []);
 
   const handleOpenRegistration = () => {
     prefetch3DExperiences();

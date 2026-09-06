@@ -17,7 +17,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: 'c. 1831',
     medium: 'Woodblock print; ink and color on paper',
     location: 'Tokyo National Museum / Met Museum',
-    imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=640&q=70',
     description: 'An iconic Japanese ukiyo-e woodblock print depicting towering waves framing Mount Fuji in the background.'
   },
   {
@@ -27,7 +27,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1889',
     medium: 'Oil on canvas',
     location: 'Museum of Modern Art (MoMA), New York',
-    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=640&q=70',
     description: 'Vibrant, swirling post-impressionist masterpiece capturing the nocturnal sky over Saint-Rémy-de-Provence.'
   },
   {
@@ -37,7 +37,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1906',
     medium: 'Oil on canvas',
     location: 'Musée de l’Orangerie, Paris',
-    imageUrl: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=640&q=70',
     description: 'Monet’s luminous impressionist exploration of light, reflections, and flora in his Giverny water garden.'
   },
   {
@@ -47,7 +47,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: 'c. 1665',
     medium: 'Oil on canvas',
     location: 'Mauritshuis, The Hague',
-    imageUrl: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?auto=format&fit=crop&w=640&q=70',
     description: 'Dutch Golden Age tronie painting celebrated for Vermeer’s delicate treatment of chiaroscuro and gaze.'
   },
   {
@@ -57,7 +57,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1818',
     medium: 'Oil on canvas',
     location: 'Hamburger Kunsthalle, Hamburg',
-    imageUrl: 'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?auto=format&fit=crop&w=640&q=70',
     description: 'A cornerstone of Romanticism depicting an introspective traveler atop a rocky precipice overlooking a misty expanse.'
   },
   {
@@ -67,7 +67,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1884–1886',
     medium: 'Oil on canvas',
     location: 'Art Institute of Chicago',
-    imageUrl: 'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=640&q=70',
     description: 'The monumental pointillist canvas depicting Parisians relaxing in a park along the River Seine.'
   },
   {
@@ -77,7 +77,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: 'c. 1503–1519',
     medium: 'Oil on poplar panel',
     location: 'Musée du Louvre, Paris',
-    imageUrl: 'https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?auto=format&fit=crop&w=640&q=70',
     description: 'The most renowned Renaissance portrait, distinguished by Leonardo’s masterly sfumato technique and enigmatic expression.'
   },
   {
@@ -87,7 +87,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: 'c. 2nd Century BCE',
     medium: 'Carved Parian Marble',
     location: 'Capitoline Museums, Rome',
-    imageUrl: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?auto=format&fit=crop&w=640&q=70',
     description: 'Classical marble sculpture celebrated for anatomical naturalism, dynamic drapery, and heroic poise.'
   },
   {
@@ -97,7 +97,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1888',
     medium: 'Oil on canvas',
     location: 'National Gallery, London',
-    imageUrl: 'https://images.unsplash.com/photo-1579541814924-49fef17c5be5?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579541814924-49fef17c5be5?auto=format&fit=crop&w=640&q=70',
     description: 'Exuberant study of yellow chromatic harmonies demonstrating Van Gogh’s expressive impasto brushwork.'
   },
   {
@@ -107,7 +107,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1923',
     medium: 'Oil and watercolor on canvas',
     location: 'Guggenheim Museum, New York',
-    imageUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=640&q=70',
     description: 'Lyrical abstraction exploring the synesthetic relationship between geometric form, motion, and acoustic resonance.'
   },
   {
@@ -117,7 +117,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1899',
     medium: 'Oil on canvas',
     location: 'Musée d’Orsay, Paris',
-    imageUrl: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=640&q=70',
     description: 'Pre-cubist still life study pioneering spatial planes and sculptural brushwork.'
   },
   {
@@ -127,7 +127,7 @@ export const ONLINE_MASTERPIECES: MasterpieceArt[] = [
     year: '1508–1512',
     medium: 'Buon fresco',
     location: 'Vatican Museums, Rome',
-    imageUrl: 'https://images.unsplash.com/photo-1579783929437-0cf7f98e7fc1?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783929437-0cf7f98e7fc1?auto=format&fit=crop&w=640&q=70',
     description: 'Monumental High Renaissance fresco illustrating biblical narratives with peerless anatomical mastery.'
   }
 ];

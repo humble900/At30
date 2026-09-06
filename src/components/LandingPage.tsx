@@ -215,7 +215,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span>LIVE TREASURE HUNT</span>
               <span>Any30 / 001</span>
             </div>
-            <img src={museumCoverImage} alt="Cinematic view inside the Any30 digital museum with glowing exhibits and visitors" />
+            <img src={museumCoverImage} alt="Cinematic view inside the Any30 digital museum with glowing exhibits and visitors" loading="eager" decoding="async" width="688" height="384" />
             <div className="card-caption">
               <div>
                 <small>EXPERIENCE 001 · 3 WINGS OPEN</small>
@@ -331,7 +331,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="world-catalogue">
           <article className="world-card world-card--live">
             <div className="world-card-media">
-              <img src={museumCoverImage} alt="Inside the Any30 Museum of Gifts — glowing exhibits and explorers" />
+              <img src={museumCoverImage} alt="Inside the Any30 Museum of Gifts — glowing exhibits and explorers" loading="lazy" decoding="async" />
               <div className="world-badges"><span className="world-badge world-badge--live">Live now</span><span className="world-index">Experience 001</span></div>
             </div>
             <div className="world-card-body">
@@ -345,7 +345,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <article className="world-card world-card--upcoming">
             <div className="world-card-media">
-              <img src={touchGrassImage} alt="Concept preview of explorers crossing a forest obstacle course" />
+              <img src={touchGrassImage} alt="Concept preview of explorers crossing a forest obstacle course" loading="lazy" decoding="async" />
               <div className="world-badges"><span className="world-badge world-badge--coming-soon"><Lock size={11}/> Coming Soon</span><span className="world-index">Experience 002</span></div>
             </div>
             <div className="world-card-body">

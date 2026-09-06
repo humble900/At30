@@ -3,44 +3,55 @@ import { ONLINE_MASTERPIECES } from '../data/artworks';
 
 export class TextureGenerator {
   // ─── ONLINE ARTWORK TEXTURE LOADER ───────────────────────────
+  private static masterpieceCache = new Map<number, THREE.CanvasTexture>();
 
   /**
-   * Loads an online fine art image into a CanvasTexture with immediate canvas painting fallback,
+   * Loads an online fine art image into a cached CanvasTexture with immediate canvas painting fallback,
    * updating dynamically as soon as the image downloads.
    */
   public static createMasterpieceTexture(artIndex: number): THREE.CanvasTexture {
-    const art = ONLINE_MASTERPIECES[artIndex % ONLINE_MASTERPIECES.length];
+    const key = artIndex % ONLINE_MASTERPIECES.length;
+    if (this.masterpieceCache.has(key)) {
+      return this.masterpieceCache.get(key)!;
+    }
+
+    const art = ONLINE_MASTERPIECES[key];
     const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 768;
+    canvas.width = 512;
+    canvas.height = 384;
     const ctx = canvas.getContext('2d')!;
 
     // 1. Render immediate rich oil-canvas fallback while image downloads
-    this.drawArtworkFallback(ctx, art, 1024, 768);
+    this.drawArtworkFallback(ctx, art, 512, 384);
 
     const texture = new THREE.CanvasTexture(canvas);
-    texture.userData = { artworkIndex: artIndex % ONLINE_MASTERPIECES.length };
+    texture.userData = { artworkIndex: key };
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
+    this.masterpieceCache.set(key, texture);
 
     // 2. Asynchronously load high-res real fine art image
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      ctx.clearRect(0, 0, 1024, 768);
+      ctx.clearRect(0, 0, 512, 384);
       // Cover fit image
-      const hRatio = 1024 / img.width;
-      const vRatio = 768 / img.height;
+      const hRatio = 512 / img.width;
+      const vRatio = 384 / img.height;
       const ratio = Math.max(hRatio, vRatio);
-      const centerShiftX = (1024 - img.width * ratio) / 2;
-      const centerShiftY = (768 - img.height * ratio) / 2;
+      const centerShiftX = (512 - img.width * ratio) / 2;
+      const centerShiftY = (384 - img.height * ratio) / 2;
 
       ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
 
       // Subtle fine art canvas grain overlay
       ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
-      ctx.fillRect(0, 0, 1024, 768);
+      ctx.fillRect(0, 0, 512, 384);
 
+      texture.needsUpdate = true;
+    };
+    img.onerror = () => {
+      // Gracefully maintain the painterly fallback on network error
       texture.needsUpdate = true;
     };
     img.src = art.imageUrl;
